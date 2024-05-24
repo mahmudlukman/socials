@@ -4,7 +4,7 @@ export const app = express();
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { errorMiddleware } from './middleware/error';
-// import userRouter from './routes/userRouter';
+import userRouter from './routes/user.route';
 // import travelRouter from './routes/travelRouter';
 
 // body parser
@@ -23,7 +23,7 @@ app.use(
 );
 
 // routes
-// app.use('/api/v1', userRouter);
+app.use('/api/v1', userRouter);
 // app.use('/api/v1', travelRouter);
 
 // testing API
