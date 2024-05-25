@@ -9,6 +9,7 @@ import path from 'path';
 import sendMail from '../utils/sendMail';
 import { accessTokenOptions, sendToken } from '../utils/jwt';
 import cloudinary from 'cloudinary';
+import User from '../models/User';
 
 // register user
 interface IRegistrationBody {
@@ -72,3 +73,40 @@ export const createActivationToken = (user: IRegistrationBody): string => {
   });
   return token;
 };
+
+// activate user
+interface IActivationRequest {
+  activation_token: string;
+}
+
+export const activateUser = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { activation_token } = req.body as IActivationRequest;
+
+      const newUser = jwt.verify(
+        activation_token,
+        process.env.ACTIVATION_SECRET as string
+      ) as { user: IUser };
+
+      if (!newUser) {
+        return next(new ErrorHandler('Invalid token', 400));
+      }
+      const { name, email, password } = newUser.user;
+
+      let user = await UserModel.findOne({ email });
+
+      if (user) {
+        return next(new ErrorHandler('User already exists', 400));
+      }
+      user = await User.create({
+        name,
+        email,
+        password,
+      });
+      res.status(201).json({ success: true });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
