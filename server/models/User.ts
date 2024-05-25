@@ -18,7 +18,6 @@ export interface IUser extends Document {
     url: string;
   };
   role: string;
-  isVerified: boolean;
   active: boolean;
   followers: string[];
   followings: string[];
@@ -60,13 +59,9 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
       default: "user",
       enum: ['user', 'admin']
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
     active: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     followers: {
       type: [String],
