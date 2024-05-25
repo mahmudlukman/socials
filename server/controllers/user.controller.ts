@@ -141,3 +141,15 @@ export const loginUser = catchAsyncError(
     }
   }
 );
+
+export const logoutUser = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    res.cookie('access_token', '', {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+      sameSite: 'none',
+      secure: true,
+    });
+    res.status(200).json({ success: true, message: 'Logged out successfully' });
+  }
+);
