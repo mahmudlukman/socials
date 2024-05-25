@@ -153,3 +153,16 @@ export const logoutUser = catchAsyncError(
     res.status(200).json({ success: true, message: 'Logged out successfully' });
   }
 );
+
+// get user info
+export const getUserInfo = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user?._id;
+      const user = await UserModel.findById(userId);
+      res.status(200).json({ success: true, user });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
