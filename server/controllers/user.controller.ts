@@ -299,3 +299,15 @@ export const updateCoverPicture = catchAsyncError(
     }
   }
 );
+
+// get all users --- only for admin
+export const getAllUsers = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const users = await UserModel.find().sort({ created: -1 });
+      res.status(201).json({ success: true, users });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
