@@ -3,6 +3,7 @@ import {
   activateUser,
   deleteUser,
   getAllUsers,
+  getUserFriends,
   getUserInfo,
   loginUser,
   logoutUser,
@@ -28,6 +29,7 @@ userRouter.put(
   updateProfilePicture
 );
 userRouter.put('/update-cover-picture', isAuthenticated, updateCoverPicture);
+userRouter.get('/friends', isAuthenticated, getUserFriends);
 userRouter.get(
   '/get-users',
   isAuthenticated,

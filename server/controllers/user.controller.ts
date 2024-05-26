@@ -315,6 +315,40 @@ export const updateCoverPicture = catchAsyncError(
   }
 );
 
+// get users friends 
+export const getUserFriends = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+
+      const user = await UserModel.findById(id);
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      if (!user.friends || user.friends.length === 0) {
+        return res.status(200).json([]);
+      }
+
+      const friends = await UserModel.find({
+        _id: { $in: user.friends },
+      }).select('name occupation location profilePicture');
+
+      // Format friends details
+      const formattedFriends = friends.map((friend) => ({
+        _id: friend._id,
+        name: friend.name,
+        occupation: friend.occupation,
+        location: friend.location,
+        picturePath: friend.profilePicture,
+      }));
+
+      res.status(200).json(formattedFriends);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
 // get all users --- only for admin
 export const getAllUsers = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {

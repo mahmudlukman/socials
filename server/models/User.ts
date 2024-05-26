@@ -19,8 +19,7 @@ export interface IUser extends Document {
   };
   role: string;
   active: boolean;
-  followers: string[];
-  followings: string[];
+  friends: string[];
   location: string;
   occupation: string;
   viewedProfile?: number;
@@ -62,11 +61,7 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    followers: {
-      type: [String],
-      default: [],
-    },
-    followings: {
+    friends: {
       type: [String],
       default: [],
     },
