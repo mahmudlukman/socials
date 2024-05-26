@@ -159,8 +159,43 @@ export const getUserInfo = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?._id;
-      const user = await UserModel.findById(userId);
+      const user = await UserModel.findById(userId).select('-password');
       res.status(200).json({ success: true, user });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// update user info
+interface IUpdateUserInfo {
+  name?: string;
+  location?: string;
+  occupation?: string;
+}
+
+// update user info
+export const updateUserInfo = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { name, location, occupation } = req.body as IUpdateUserInfo;
+      const userId = req.user?._id;
+      const user = await UserModel.findById(userId);
+
+      if (!user) {
+        return next(new ErrorHandler('User not found', 400));
+      }
+
+      if (name) user.name = name;
+      if (location) user.location = location;
+      if (occupation) user.occupation = occupation;
+
+      await user.save();
+
+      res.status(201).json({
+        success: true,
+        user,
+      });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }

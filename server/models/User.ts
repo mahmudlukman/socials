@@ -21,9 +21,8 @@ export interface IUser extends Document {
   active: boolean;
   followers: string[];
   followings: string[];
-  location?: string;
-  occupation?: string;
-  relationship?: string;
+  location: string;
+  occupation: string;
   viewedProfile?: number;
   impressions?: number;
   comparePassword: (password: string) => Promise<boolean>;
@@ -76,10 +75,6 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
     },
     occupation: {
       type: String,
-    },
-    relationship: {
-      type: Number,
-      enum: [1, 2, 3]
     },
     viewedProfile: {
       type: Number,
