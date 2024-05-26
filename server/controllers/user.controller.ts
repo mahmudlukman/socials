@@ -125,6 +125,12 @@ export const loginUser = catchAsyncError(
       if (!email || !password) {
         return next(new ErrorHandler('Please enter email and password', 400));
       }
+
+      const emailLowerCase = email.toLowerCase();
+      const existedUser = await User.findOne({ email: emailLowerCase });
+      if (!existedUser)
+        return next(new ErrorHandler('User does not exist!', 400));
+
       const user = await UserModel.findOne({ email }).select('+password');
 
       if (!user) {
@@ -135,6 +141,15 @@ export const loginUser = catchAsyncError(
       if (!isPasswordMatch) {
         return next(new ErrorHandler('Invalid credentials', 400));
       }
+
+      const { active } = existedUser;
+      if (!active)
+        return next(
+          new ErrorHandler(
+            'This account has been suspended! Try to contact the admin',
+            400
+          )
+        );
       sendToken(user, 200, res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
@@ -340,6 +355,30 @@ export const updatePassword = catchAsyncError(
       }
 
       user.password = newPassword;
+
+      await user.save();
+
+      res.status(201).json({ success: true, user });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// update user status --- only for admin
+export const updateUserStatus = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { role, active } = req.body;
+      const userId = req.user?._id;
+      const user = await UserModel.findById(userId);
+
+      if (!user) {
+        return next(new ErrorHandler('User not found', 400));
+      }
+
+      if (role) user.role = role;
+      if (active) user.active = active;
 
       await user.save();
 
