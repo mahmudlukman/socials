@@ -29,7 +29,7 @@ userRouter.put(
   updateProfilePicture
 );
 userRouter.put('/update-cover-picture', isAuthenticated, updateCoverPicture);
-userRouter.get('/friends', isAuthenticated, getUserFriends);
+userRouter.get('/friends/:id', isAuthenticated, getUserFriends);
 userRouter.get(
   '/get-users',
   isAuthenticated,
