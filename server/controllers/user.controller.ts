@@ -201,3 +201,52 @@ export const updateUserInfo = catchAsyncError(
     }
   }
 );
+
+// update user profile picture
+interface IUpdateProfilePicture {
+  profilePicture: string;
+}
+
+export const updateProfilePicture = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { profilePicture } = req.body as IUpdateProfilePicture;
+
+      const userId = req.user?._id;
+
+      const user = await UserModel.findById(userId);
+
+      if (profilePicture && user) {
+        // if user have one avatar then call this if
+        if (user?.profilePicture?.public_id) {
+          // first delete the old image
+          await cloudinary.v2.uploader.destroy(user?.profilePicture?.public_id);
+
+          const myCloud = await cloudinary.v2.uploader.upload(profilePicture, {
+            folder: 'profilePicture',
+            width: 150,
+          });
+          user.profilePicture = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          };
+        } else {
+          const myCloud = await cloudinary.v2.uploader.upload(profilePicture, {
+            folder: 'avatars',
+            width: 150,
+          });
+          user.profilePicture = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          };
+        }
+      }
+
+      await user?.save();
+
+      res.status(200).json({ success: true, user });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
