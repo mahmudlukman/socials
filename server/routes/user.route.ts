@@ -7,6 +7,7 @@ import {
   logoutUser,
   registerUser,
   updateCoverPicture,
+  updatePassword,
   updateProfilePicture,
   updateUserInfo,
 } from '../controllers/user.controller';
@@ -26,5 +27,6 @@ userRouter.put(
 );
 userRouter.put('/update-cover-picture', isAuthenticated, updateCoverPicture);
 userRouter.get('/get-users', isAuthenticated, getAllUsers);
+userRouter.put('/update-password', isAuthenticated, updatePassword);
 
 export default userRouter;
