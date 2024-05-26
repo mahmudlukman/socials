@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   activateUser,
+  addRemoveFriend,
   deleteUser,
   getAllUsers,
   getUserFriends,
@@ -30,6 +31,7 @@ userRouter.put(
 );
 userRouter.put('/update-cover-picture', isAuthenticated, updateCoverPicture);
 userRouter.get('/friends/:id', isAuthenticated, getUserFriends);
+userRouter.put('/add-remove/:id/:friendId', isAuthenticated, addRemoveFriend);
 userRouter.get(
   '/get-users',
   isAuthenticated,

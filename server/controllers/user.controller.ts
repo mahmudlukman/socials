@@ -315,7 +315,7 @@ export const updateCoverPicture = catchAsyncError(
   }
 );
 
-// get users friends 
+// get users friends
 export const getUserFriends = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -323,7 +323,7 @@ export const getUserFriends = catchAsyncError(
 
       const user = await UserModel.findById(id);
       if (!user) {
-        return next(new ErrorHandler("User not found", 404));
+        return next(new ErrorHandler('User not found', 404));
       }
 
       if (!user.friends || user.friends.length === 0) {
@@ -349,6 +349,42 @@ export const getUserFriends = catchAsyncError(
     }
   }
 );
+
+// get users friends
+export const addRemoveFriend = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id, friendId } = req.params;
+
+      const user = await UserModel.findById(id);
+      const friend = await UserModel.findById(friendId);
+
+      if (!user || !friend) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      if (user.friends.includes(friendId)) {
+        user.friends = user.friends.filter((userId) => userId !== friendId);
+        friend.friends = friend.friends.filter((userId) => userId !== id);
+      } else {
+        user.friends.push(friendId);
+        friend.friends.push(id);
+      }
+
+      await user.save();
+      await friend.save();
+
+      const friends = await User.find({
+        _id: { $in: user.friends },
+      }).select('_id name occupation location picturePath');
+
+      res.status(200).json(friends);
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
 // get all users --- only for admin
 export const getAllUsers = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
