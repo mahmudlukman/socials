@@ -223,7 +223,7 @@ export const updateProfilePicture = catchAsyncError(
           await cloudinary.v2.uploader.destroy(user?.profilePicture?.public_id);
 
           const myCloud = await cloudinary.v2.uploader.upload(profilePicture, {
-            folder: 'profilePicture',
+            folder: 'profilePictures',
             width: 150,
           });
           user.profilePicture = {
@@ -232,10 +232,59 @@ export const updateProfilePicture = catchAsyncError(
           };
         } else {
           const myCloud = await cloudinary.v2.uploader.upload(profilePicture, {
-            folder: 'avatars',
+            folder: 'profilePictures',
             width: 150,
           });
           user.profilePicture = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          };
+        }
+      }
+
+      await user?.save();
+
+      res.status(200).json({ success: true, user });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// update user profile picture
+interface IUpdateCoverPicture {
+  coverPicture: string;
+}
+
+export const updateCoverPicture = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { coverPicture } = req.body as IUpdateCoverPicture;
+
+      const userId = req.user?._id;
+
+      const user = await UserModel.findById(userId);
+
+      if (coverPicture && user) {
+        // if user have one avatar then call this if
+        if (user?.coverPicture?.public_id) {
+          // first delete the old image
+          await cloudinary.v2.uploader.destroy(user?.coverPicture?.public_id);
+
+          const myCloud = await cloudinary.v2.uploader.upload(coverPicture, {
+            folder: 'coverPictures',
+            width: 150,
+          });
+          user.coverPicture = {
+            public_id: myCloud.public_id,
+            url: myCloud.secure_url,
+          };
+        } else {
+          const myCloud = await cloudinary.v2.uploader.upload(coverPicture, {
+            folder: 'coverPictures',
+            width: 150,
+          });
+          user.coverPicture = {
             public_id: myCloud.public_id,
             url: myCloud.secure_url,
           };

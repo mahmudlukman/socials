@@ -5,6 +5,7 @@ import {
   loginUser,
   logoutUser,
   registerUser,
+  updateCoverPicture,
   updateProfilePicture,
   updateUserInfo,
 } from '../controllers/user.controller';
@@ -17,6 +18,11 @@ userRouter.post('/login', loginUser);
 userRouter.get('/logout', isAuthenticated, logoutUser);
 userRouter.get('/me', isAuthenticated, getUserInfo);
 userRouter.put('/update-user', isAuthenticated, updateUserInfo);
-userRouter.put('/update-profile-picture', isAuthenticated, updateProfilePicture);
+userRouter.put(
+  '/update-profile-picture',
+  isAuthenticated,
+  updateProfilePicture
+);
+userRouter.put('/update-cover-picture', isAuthenticated, updateCoverPicture);
 
 export default userRouter;
