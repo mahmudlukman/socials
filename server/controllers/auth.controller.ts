@@ -66,7 +66,7 @@ export const registerUser = catchAsyncError(
 );
 
 // Function to create an activation token
-export const createActivationToken = (user: IRegistrationBody): string => {
+export const createActivationToken = (user: any): string => {
   const token = jwt.sign({ user }, process.env.ACTIVATION_SECRET as Secret, {
     expiresIn: '5m',
   });
@@ -165,6 +165,54 @@ export const logoutUser = catchAsyncError(
       secure: true,
     });
     res.status(200).json({ success: true, message: 'Logged out successfully' });
+  }
+);
+
+// register user
+export const forgotPassword = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { email } = req.body;
+      if (!email) {
+        return next(new ErrorHandler('Please provide a valid email!', 400));
+      }
+
+      const emailLowerCase = email.toLowerCase();
+      const user = await UserModel.findOne({ email: emailLowerCase });
+      if (!user) {
+        return next(new ErrorHandler('User not found, invalid request!', 400));
+      }
+      
+
+      const resetToken = createActivationToken(user);
+
+      // const activationCode = activationToken.activationCode;
+      const resetUrl = `http://localhost:5173/${resetToken}`;
+
+      const data = { user: { name: user.name }, resetUrl };
+      const html = await ejs.renderFile(
+        path.join(__dirname, '../mails/forgot-password-mail.ejs'),
+        data
+      );
+
+      try {
+        await sendMail({
+          email: user.email,
+          subject: 'Reset your password',
+          template: 'forgot-password-mail.ejs',
+          data,
+        });
+        res.status(201).json({
+          success: true,
+          message: `Please check your email: ${user.email} to reset your password!`,
+          resetToken: resetToken,
+        });
+      } catch (error: any) {
+        return next(new ErrorHandler(error.message, 400));
+      }
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
   }
 );
 
