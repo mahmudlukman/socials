@@ -168,7 +168,7 @@ export const logoutUser = catchAsyncError(
   }
 );
 
-// register user
+// forgot password
 export const forgotPassword = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -182,12 +182,10 @@ export const forgotPassword = catchAsyncError(
       if (!user) {
         return next(new ErrorHandler('User not found, invalid request!', 400));
       }
-      
 
       const resetToken = createActivationToken(user);
 
-      // const activationCode = activationToken.activationCode;
-      const resetUrl = `http://localhost:5173/${resetToken}`;
+      const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}&id=${user._id}`;
 
       const data = { user: { name: user.name }, resetUrl };
       const html = await ejs.renderFile(
@@ -216,4 +214,50 @@ export const forgotPassword = catchAsyncError(
   }
 );
 
+// update user password
+interface IResetPassword {
+  newPassword: string;
+}
+// forgot password
+export const resetPassword = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { newPassword } = req.body as IResetPassword;
+      const { id } = req.query;
 
+      const user = await UserModel.findById(id).select('+password');
+
+      if (!user) {
+        return next(new ErrorHandler('user not found!', 400));
+      }
+
+      const isSamePassword = await user.comparePassword(newPassword);
+      if (isSamePassword)
+        return next(
+          new ErrorHandler(
+            'New password must be different from the previous one!',
+            400
+          )
+        );
+
+      if (newPassword.trim().length < 6 || newPassword.trim().length > 20) {
+        return next(
+          new ErrorHandler(
+            'Password must be between at least 6 characters!',
+            400
+          )
+        );
+      }
+
+      user.password = newPassword.trim();
+      await user.save();
+
+      res.status(201).json({
+        success: true,
+        message: `Password Reset Successfully', 'Now you can login with new password!`,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
