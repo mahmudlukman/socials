@@ -4,6 +4,8 @@ import ErrorHandler from '../utils/errorHandler';
 import { catchAsyncError } from '../middleware/catchAsyncError';
 import { NextFunction, Request, Response } from 'express';
 import cloudinary from 'cloudinary';
+import User from '../models/User';
+import Notification from '../models/Notification';
 
 // get user info
 export const getUserInfo = catchAsyncError(
@@ -21,15 +23,15 @@ export const getUserInfo = catchAsyncError(
 // update user info
 interface IUpdateUserInfo {
   name?: string;
-  location?: string;
-  occupation?: string;
+  userName?: string;
+  bio?: string;
 }
 
 // update user info
 export const updateUserInfo = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, location, occupation } = req.body as IUpdateUserInfo;
+      const { name, userName, bio } = req.body as IUpdateUserInfo;
       const userId = req.user?._id;
       const user = await UserModel.findById(userId);
 
@@ -38,8 +40,8 @@ export const updateUserInfo = catchAsyncError(
       }
 
       if (name) user.name = name;
-      if (location) user.location = location;
-      if (occupation) user.occupation = occupation;
+      if (userName) user.userName = userName;
+      if (bio) user.bio = bio;
 
       await user.save();
 
@@ -151,75 +153,137 @@ export const updateCoverPicture = catchAsyncError(
   }
 );
 
-// get users friends
-export const getUserFriends = catchAsyncError(
+// Follow and unfollow user
+export const followUnfollowUser = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { id } = req.params;
+      const loggedInUser = req.user;
+      const { followUserId } = req.body;
 
-      const user = await UserModel.findById(id);
-      if (!user) {
-        return next(new ErrorHandler('User not found', 404));
-      }
+      const isFollowedBefore = loggedInUser.following.find(
+        (item: { userId: any }) => item.userId === followUserId
+      );
+      const loggedInUserId = loggedInUser._id;
 
-      if (!user.friends || user.friends.length === 0) {
-        return res.status(200).json([]);
-      }
+      if (isFollowedBefore) {
+        await UserModel.updateOne(
+          { _id: followUserId },
+          { $pull: { followers: { userId: loggedInUserId } } }
+        );
 
-      const friends = await UserModel.find({
-        _id: { $in: user.friends },
-      }).select('name occupation location profilePicture');
+        await UserModel.updateOne(
+          { _id: loggedInUserId },
+          { $pull: { following: { userId: followUserId } } }
+        );
 
-      // Format friends details
-      const formattedFriends = friends.map((friend) => ({
-        _id: friend._id,
-        name: friend.name,
-        occupation: friend.occupation,
-        location: friend.location,
-        profilePicture: friend.profilePicture,
-      }));
+        await Notification.deleteOne({
+          'creator._id': loggedInUserId,
+          userId: followUserId,
+          type: 'Follow',
+        });
 
-      res.status(200).json(formattedFriends);
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
-    }
-  }
-);
-
-// get users friends
-export const addRemoveFriend = catchAsyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { id, friendId } = req.params;
-
-      const user = await UserModel.findById(id);
-      const friend = await UserModel.findById(friendId);
-
-      if (!user || !friend) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-
-      if (user.friends.includes(friendId)) {
-        user.friends = user.friends.filter((userId) => userId !== friendId);
-        friend.friends = friend.friends.filter((userId) => userId !== id);
+        res.status(200).json({
+          success: true,
+          message: 'User unfollowed successfully',
+        });
       } else {
-        user.friends.push(friendId);
-        friend.friends.push(id);
+        await UserModel.updateOne(
+          { _id: followUserId },
+          { $push: { followers: { userId: loggedInUserId } } }
+        );
+
+        await UserModel.updateOne(
+          { _id: loggedInUserId },
+          { $push: { following: { userId: followUserId } } }
+        );
+
+        await Notification.create({
+          creator: req.user,
+          type: 'Follow',
+          title: 'Followed you',
+          userId: followUserId,
+        });
+
+        res.status(200).json({
+          success: true,
+          message: 'User followed successfully',
+        });
       }
-
-      await user.save();
-      await friend.save();
-
-      const friends = await UserModel.find({
-        _id: { $in: user.friends },
-      }).select('_id name occupation location picturePath');
-
-      res.status(200).json(friends);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
   }
 );
+
+// get users friends
+// export const getUserFriends = catchAsyncError(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const { id } = req.params;
+
+//       const user = await UserModel.findById(id);
+//       if (!user) {
+//         return next(new ErrorHandler('User not found', 404));
+//       }
+
+//       if (!user.friends || user.friends.length === 0) {
+//         return res.status(200).json([]);
+//       }
+
+//       const friends = await UserModel.find({
+//         _id: { $in: user.friends },
+//       }).select('name occupation location profilePicture');
+
+//       // Format friends details
+//       const formattedFriends = friends.map((friend) => ({
+//         _id: friend._id,
+//         name: friend.name,
+//         occupation: friend.occupation,
+//         location: friend.location,
+//         profilePicture: friend.profilePicture,
+//       }));
+
+//       res.status(200).json(formattedFriends);
+//     } catch (error: any) {
+//       return next(new ErrorHandler(error.message, 400));
+//     }
+//   }
+// );
+
+// // get users friends
+// export const addRemoveFriend = catchAsyncError(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const { id, friendId } = req.params;
+
+//       const user = await UserModel.findById(id);
+//       const friend = await UserModel.findById(friendId);
+
+//       if (!user || !friend) {
+//         return res.status(404).json({ message: 'User not found' });
+//       }
+
+//       if (user.friends.includes(friendId)) {
+//         user.friends = user.friends.filter((userId) => userId !== friendId);
+//         friend.friends = friend.friends.filter((userId) => userId !== id);
+//       } else {
+//         user.friends.push(friendId);
+//         friend.friends.push(id);
+//       }
+
+//       await user.save();
+//       await friend.save();
+
+//       const friends = await UserModel.find({
+//         _id: { $in: user.friends },
+//       }).select('_id name occupation location picturePath');
+
+//       res.status(200).json(friends);
+//     } catch (error: any) {
+//       return next(new ErrorHandler(error.message, 400));
+//     }
+//   }
+// );
 
 // get all users --- only for admin
 export const getAllUsers = catchAsyncError(
@@ -229,6 +293,24 @@ export const getAllUsers = catchAsyncError(
       res.status(201).json({ success: true, users });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// get user notification
+export const getNotification = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const notifications = await Notification.find({
+        userId: req.user.id,
+      }).sort({ createdAt: -1 });
+
+      res.status(201).json({
+        success: true,
+        notifications,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 401));
     }
   }
 );

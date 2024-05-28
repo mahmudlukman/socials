@@ -1,9 +1,10 @@
 import express from 'express';
 import {
-  addRemoveFriend,
   deleteUser,
+  followUnfollowUser,
   getAllUsers,
-  getUserFriends,
+  getNotification,
+  // getUserFriends,
   getUserInfo,
   updateCoverPicture,
   updatePassword,
@@ -22,8 +23,8 @@ userRouter.put(
   updateProfilePicture
 );
 userRouter.put('/update-cover-picture', isAuthenticated, updateCoverPicture);
-userRouter.get('/friends/:id', isAuthenticated, getUserFriends);
-userRouter.put('/add-remove/:id/:friendId', isAuthenticated, addRemoveFriend);
+userRouter.get('/get-notifications', isAuthenticated, getNotification);
+userRouter.put('/follow-unfollow', isAuthenticated, followUnfollowUser);
 userRouter.get(
   '/get-users',
   isAuthenticated,
