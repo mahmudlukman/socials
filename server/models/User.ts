@@ -7,6 +7,8 @@ const emailRegexPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export interface IUser extends Document {
   name: string;
+  userName?: string,
+  bio?: string,
   email: string;
   password: string;
   profilePicture: {
@@ -19,9 +21,8 @@ export interface IUser extends Document {
   };
   role: string;
   active: boolean;
-  friends: string[];
-  location: string;
-  occupation: string;
+  followers: { userId: string }[];
+  following: { userId: string }[];
   viewedProfile?: number;
   impressions?: number;
   comparePassword: (password: string) => Promise<boolean>;
@@ -34,10 +35,17 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
       type: String,
       required: [true, "Please enter your name"],
     },
+    userName: {
+      type: String,
+    },
+    bio: {
+      type: String,
+    },
     email: {
       type: String,
       required: [true, "Please enter your email"],
       unique: true,
+      trim: true
     },
     password: {
       type: String,
@@ -61,16 +69,20 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    friends: {
-      type: [String],
-      default: [],
-    },
-    location: {
-      type: String,
-    },
-    occupation: {
-      type: String,
-    },
+    followers: [
+      {
+        userId: {
+          type: String,
+        },
+      },
+    ],
+    following: [
+      {
+        userId: {
+          type: String,
+        },
+      },
+    ],
     viewedProfile: {
       type: Number,
     },
