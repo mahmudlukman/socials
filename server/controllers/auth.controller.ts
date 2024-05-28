@@ -15,7 +15,6 @@ interface IRegistrationBody {
   name: string;
   email: string;
   password: string;
-  profilePicture?: string;
 }
 
 export const registerUser = catchAsyncError(
@@ -98,10 +97,16 @@ export const activateUser = catchAsyncError(
       if (user) {
         return next(new ErrorHandler('User already exists', 400));
       }
+
+      const userNameWithoutSpace = name.replace(/\s/g, '');
+
+      const uniqueNumber = Math.floor(Math.random() * 1000);
+
       user = await User.create({
         name,
         email,
         password,
+        userName: `${userNameWithoutSpace}${uniqueNumber}`
       });
       res.status(201).json({ success: true });
     } catch (error: any) {
