@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema, model, Model } from 'mongoose';
+import { IUser } from './User';
 
 // Interfaces for nested objects
 interface ILike {
@@ -8,26 +9,25 @@ interface ILike {
   userAvatar: string;
 }
 
+interface IImage {
+  public_id: string;
+  url: string;
+}
+
 interface IReply {
-  user: any; // Define a proper type or interface for the user
+  user: IUser;
   title: string;
-  image: {
-    public_id: string;
-    url: string;
-  };
+  image?: IImage;
   createdAt: Date;
   likes: ILike[];
-  reply?: IReply[]; // Optional, as replies can be nested
+  reply?: IReply[];
 }
 
 // Main Post interface
 interface IPost extends Document {
   title: string;
-  image: {
-    public_id: string;
-    url: string;
-  };
-  user: any; // Define a proper type or interface for the user
+  image?: IImage;
+  user: IUser;
   likes: ILike[];
   replies: IReply[];
 }
@@ -40,13 +40,19 @@ const likeSchema: Schema<ILike> = new mongoose.Schema({
   userAvatar: { type: String },
 });
 
-const replySchema: Schema<IReply> = new mongoose.Schema({
-  user: { type: Object }, // Adjust this to the proper type for the user
-  title: { type: String },
-  image: {
-    public_id: { type: String },
-    url: { type: String },
+const imageSchema: Schema<IImage> = new mongoose.Schema({
+  public_id: {
+    type: String,
   },
+  url: {
+    type: String,
+  },
+});
+
+const replySchema: Schema<IReply> = new mongoose.Schema({
+  user: { type: Object },
+  title: { type: String },
+  image: imageSchema,
   createdAt: {
     type: Date,
     default: Date.now,
@@ -54,12 +60,9 @@ const replySchema: Schema<IReply> = new mongoose.Schema({
   likes: [likeSchema],
   reply: [
     {
-      user: { type: Object }, // Adjust this to the proper type for the user
+      user: { type: Object },
       title: { type: String },
-      image: {
-        public_id: { type: String },
-        url: { type: String },
-      },
+      image: imageSchema,
       createdAt: {
         type: Date,
         default: Date.now,
@@ -69,16 +72,16 @@ const replySchema: Schema<IReply> = new mongoose.Schema({
   ],
 });
 
-const postSchema: Schema<IPost>  = new mongoose.Schema({
-  title: { type: String },
-  image: {
-    public_id: { type: String },
-    url: { type: String },
+const postSchema: Schema<IPost> = new mongoose.Schema(
+  {
+    title: { type: String },
+    image: imageSchema,
+    user: { type: Object },
+    likes: [likeSchema],
+    replies: [replySchema],
   },
-  user: { type: Object }, // Adjust this to the proper type for the user
-  likes: [likeSchema],
-  replies: [replySchema],
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 const Post: Model<IPost> = mongoose.model('Post', postSchema);
 
