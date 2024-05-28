@@ -4,22 +4,15 @@ import { IUser } from "../models/User";
 
 interface ITokenOptions {
   expires: Date;
-  maxAge: number;
   httpOnly: boolean;
   sameSite: "lax" | "strict" | "none" | undefined;
   secure?: boolean;
 }
 
-// parse environment variables to integrates with fallback values
-const accessTokenExpire = parseInt(
-  process.env.ACCESS_TOKEN_EXPIRE || "300",
-  10
-);
 
 // options for cookies
  export const accessTokenOptions: ITokenOptions = {
-  expires: new Date(Date.now() + accessTokenExpire * 60 * 60 * 60 * 1000),
-  maxAge: accessTokenExpire * 60 * 60 * 1000,
+  expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
   httpOnly: true,
   sameSite: "lax",
 };
