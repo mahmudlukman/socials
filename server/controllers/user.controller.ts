@@ -294,7 +294,7 @@ export const updateUserStatus = catchAsyncError(
     try {
       const { role, active } = req.body;
       const { id } = req.params;
-      const userId = req.user?._id;
+      // const userId = req.user?._id;
       const user = await UserModel.findById(id);
 
       if (!user) {

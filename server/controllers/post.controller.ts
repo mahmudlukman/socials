@@ -3,6 +3,7 @@ import cloudinary from 'cloudinary';
 import Post from '../models/Post';
 import { catchAsyncError } from '../middleware/catchAsyncError';
 import ErrorHandler from '../utils/errorHandler';
+import Notification from '../models/Notification';
 
 export const createPost = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -76,3 +77,79 @@ export const getAllPosts = catchAsyncError(
     }
   }
 );
+
+// add or remove likes
+export const updateLikes = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const postId = req.body.postId;
+      const userId = req.user.id;
+
+      const post = await Post.findById(postId);
+
+      if (!post) {
+        return next(new ErrorHandler('Post not found', 404));
+      }
+
+      const isLikedBefore = post.likes.find(
+        (item) => item.userId === userId
+      );
+
+      if (isLikedBefore) {
+        await Post.findByIdAndUpdate(postId, {
+          $pull: {
+            likes: {
+              userId: userId,
+            },
+          },
+        });
+
+        if (post.user && userId !== post.user._id) {
+          await Notification.deleteOne({
+            'creator._id': userId,
+            userId: post.user._id,
+            type: 'Like',
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: 'Like removed successfully',
+        });
+      } else {
+        await Post.updateOne(
+          { _id: postId },
+          {
+            $push: {
+              likes: {
+                name: req.user.name,
+                userName: req.user.userName,
+                userId: userId,
+                userAvatar: req.user.profilePicture.url,
+                postId,
+              },
+            },
+          }
+        );
+
+        if (post.user && userId !== post.user._id) {
+          await Notification.create({
+            creator: req.user,
+            type: 'Like',
+            title: post.title ? post.title : 'Liked your post',
+            userId: post.user._id,
+            postId: postId,
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: 'Like added successfully',
+        });
+      }
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
