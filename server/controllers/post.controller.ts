@@ -61,3 +61,18 @@ export const createPost = catchAsyncError(
     }
   }
 );
+
+// get all posts
+export const getAllPosts = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const posts = await Post.find().sort({
+        createdAt: -1,
+      });
+
+      res.status(201).json({ success: true, posts });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);

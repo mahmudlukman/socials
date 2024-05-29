@@ -117,25 +117,31 @@ export const activateUser = catchAsyncError(
 
 // Login user
 interface ILoginRequest {
-  email: string;
+  emailOrUsername: string;
   password: string;
 }
+
+const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 export const loginUser = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email, password } = req.body as ILoginRequest;
+      const { emailOrUsername, password } = req.body as ILoginRequest;
 
-      if (!email || !password) {
+      if (!emailOrUsername || !password) {
         return next(new ErrorHandler('Please enter email and password', 400));
       }
 
-      const emailLowerCase = email.toLowerCase();
-      const existedUser = await User.findOne({ email: emailLowerCase });
+      const query = isValidEmail(emailOrUsername) 
+        ? { email: emailOrUsername.toLowerCase() } 
+        : { userName: emailOrUsername };
+
+      // const emailLowerCase = email.toLowerCase();
+      const existedUser = await User.findOne(query);
       if (!existedUser)
         return next(new ErrorHandler('User does not exist!', 400));
 
-      const user = await UserModel.findOne({ email }).select('+password');
+      const user = await UserModel.findOne(query).select('+password');
 
       if (!user) {
         return next(new ErrorHandler('Invalid credentials', 400));

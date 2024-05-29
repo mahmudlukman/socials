@@ -1,14 +1,14 @@
-require("dotenv").config();
-import mongoose, { Document, Model, Schema } from "mongoose";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+require('dotenv').config();
+import mongoose, { Document, Model, Schema } from 'mongoose';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const emailRegexPattern: RegExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export interface IUser extends Document {
   name: string;
-  userName?: string,
-  bio?: string,
+  userName?: string;
+  bio?: string;
   email: string;
   password: string;
   profilePicture: {
@@ -33,23 +33,26 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, "Please enter your name"],
+      required: [true, 'Please enter your name'],
     },
     userName: {
       type: String,
+      unique: true,
+      trim: true,
+      sparse: true,
     },
     bio: {
       type: String,
     },
     email: {
       type: String,
-      required: [true, "Please enter your email"],
+      required: [true, 'Please enter your email'],
       unique: true,
-      trim: true
+      trim: true,
     },
     password: {
       type: String,
-      minlength: [6, "Password must be at least 6 characters"],
+      minlength: [6, 'Password must be at least 6 characters'],
       select: false,
     },
     profilePicture: {
@@ -62,8 +65,8 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
     },
     role: {
       type: String,
-      default: "user",
-      enum: ['user', 'admin']
+      default: 'user',
+      enum: ['user', 'admin'],
     },
     active: {
       type: Boolean,
@@ -94,8 +97,8 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
 );
 
 // Hash Password before saving
-UserSchema.pre<IUser>("save", async function (next) {
-  if (!this.isModified("password")) {
+UserSchema.pre<IUser>('save', async function (next) {
+  if (!this.isModified('password')) {
     next();
   }
   this.password = await bcrypt.hash(this.password, 10);
@@ -104,8 +107,8 @@ UserSchema.pre<IUser>("save", async function (next) {
 
 // sign access token
 UserSchema.methods.SignAccessToken = function () {
-  return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || "", {
-    expiresIn: "5m",
+  return jwt.sign({ id: this._id }, process.env.ACCESS_TOKEN || '', {
+    expiresIn: '5m',
   });
 };
 
@@ -116,5 +119,5 @@ UserSchema.methods.comparePassword = async function (
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const UserModel: Model<IUser> = mongoose.model("User", UserSchema);
+const UserModel: Model<IUser> = mongoose.model('User', UserSchema);
 export default UserModel;

@@ -49,6 +49,12 @@ export const updateUserInfo = catchAsyncError(
         user,
       });
     } catch (error: any) {
+      // Handle MongoDB duplicate key error
+      if (error.code === 11000) {
+        if (error.keyValue.userName) {
+          return next(new ErrorHandler('Username already exists', 400));
+        }
+      }
       return next(new ErrorHandler(error.message, 400));
     }
   }
@@ -287,8 +293,9 @@ export const updateUserStatus = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { role, active } = req.body;
+      const { id } = req.params;
       const userId = req.user?._id;
-      const user = await UserModel.findById(userId);
+      const user = await UserModel.findById(id);
 
       if (!user) {
         return next(new ErrorHandler('User not found', 400));

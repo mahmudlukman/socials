@@ -33,7 +33,7 @@ userRouter.get(
 );
 userRouter.put('/update-password', isAuthenticated, updatePassword);
 userRouter.put(
-  '/update-user-status',
+  '/update-user-status/:id',
   isAuthenticated,
   authorizeRoles('admin'),
   updateUserStatus
