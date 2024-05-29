@@ -1,11 +1,11 @@
 import mongoose, { Document, Schema, Model } from 'mongoose';
 import { IUser } from './User';
 
-// Define the TypeScript interface for the notification document
 export interface INotification extends Document {
   creator: Record<string, any>;
   type: string;
   title: string;
+  status: string;
   postId: string;
   userId: string;
 }
@@ -21,6 +21,11 @@ const NotificationSchema: Schema<INotification> = new mongoose.Schema(
     },
     title: {
       type: String,
+    },
+    status: {
+      type: String,
+      required: true,
+      default: 'unread',
     },
     postId: {
       type: String,
