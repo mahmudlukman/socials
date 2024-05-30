@@ -124,9 +124,7 @@ export const updateCoverPicture = catchAsyncError(
       const user = await UserModel.findById(userId);
 
       if (coverPicture && user) {
-        // if user have one avatar then call this if
         if (user?.coverPicture?.public_id) {
-          // first delete the old image
           await cloudinary.v2.uploader.destroy(user?.coverPicture?.public_id);
 
           const myCloud = await cloudinary.v2.uploader.upload(coverPicture, {
@@ -233,22 +231,22 @@ export const getAllUsers = catchAsyncError(
 );
 
 // get user notification
-export const getNotification = catchAsyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const notifications = await Notification.find({
-        userId: req.user.id,
-      }).sort({ createdAt: -1 });
+// export const getNotification = catchAsyncError(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const notifications = await Notification.find({
+//         userId: req.user.id,
+//       }).sort({ createdAt: -1 });
 
-      res.status(201).json({
-        success: true,
-        notifications,
-      });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 401));
-    }
-  }
-);
+//       res.status(201).json({
+//         success: true,
+//         notifications,
+//       });
+//     } catch (error: any) {
+//       return next(new ErrorHandler(error.message, 401));
+//     }
+//   }
+// );
 
 // update user password
 interface IUpdatePassword {
