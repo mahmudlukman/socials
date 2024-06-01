@@ -91,9 +91,7 @@ export const updateLikes = catchAsyncError(
         return next(new ErrorHandler('Post not found', 404));
       }
 
-      const isLikedBefore = post.likes.find(
-        (item) => item.userId === userId
-      );
+      const isLikedBefore = post.likes.find((item) => item.userId === userId);
 
       if (isLikedBefore) {
         await Post.findByIdAndUpdate(postId, {
@@ -153,3 +151,55 @@ export const updateLikes = catchAsyncError(
   }
 );
 
+// add replies in post
+export const addReplies = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const postId = req.body.postId;
+
+      let myCloud;
+
+      if (req.body.image) {
+        myCloud = await cloudinary.v2.uploader.upload(req.body.image, {
+          folder: 'posts',
+        });
+      }
+
+      const replyData = {
+        user: req.user,
+        title: req.body.title,
+        image: req.body.image
+          ? {
+              public_id: myCloud?.public_id,
+              url: myCloud?.secure_url,
+            }
+          : null,
+        likes: [],
+      } as any;
+
+      // Find the post by its ID
+      let post = await Post.findById(postId);
+
+      if (!post) {
+        return res.status(404).json({
+          success: false,
+          message: 'Post not found',
+        });
+      }
+
+      // Add the reply data to the 'replies' array of the post
+      post.replies.push(replyData);
+
+      // Save the updated post
+      await post.save();
+
+      res.status(201).json({
+        success: true,
+        post,
+      });
+    } catch (error: any) {
+      console.log(error);
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
