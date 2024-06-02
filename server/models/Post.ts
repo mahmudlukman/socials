@@ -15,6 +15,7 @@ interface IImage {
 }
 
 interface IReply {
+  _id: any;
   user: IUser;
   title: string;
   image?: IImage;
