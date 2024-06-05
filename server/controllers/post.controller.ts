@@ -463,3 +463,29 @@ export const updateRepliesReplyLike = catchAsyncError(
     }
   }
 );
+
+// delete post
+export const deletePost = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const post = await Post.findById(req.params.id);
+      if (!post) {
+        return next(new ErrorHandler('Post is not found with this id', 404));
+      }
+
+      if (post.image?.public_id) {
+        await cloudinary.v2.uploader.destroy(post.image.public_id);
+      }
+
+      await Post.deleteOne({ _id: req.params.id });
+
+      res.status(201).json({
+        success: true,
+        message: 'Post deleted successfully',
+      });
+    } catch (error) {
+      console.log(error);
+      return next(new ErrorHandler(error, 400));
+    }
+  }
+);

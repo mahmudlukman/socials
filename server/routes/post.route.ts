@@ -3,6 +3,7 @@ import {
   addReplies,
   addReply,
   createPost,
+  deletePost,
   getAllPosts,
   updateLikes,
   updateRepliesReplyLike,
@@ -18,4 +19,5 @@ postRouter.put('/add-replies', isAuthenticated, addReplies);
 postRouter.put('/add-reply', isAuthenticated, addReply);
 postRouter.put('/update-replies-react', isAuthenticated, updateReplyLikes);
 postRouter.put('/update-reply-react', isAuthenticated, updateRepliesReplyLike);
+postRouter.delete('/delete/:id', isAuthenticated, deletePost);
 export default postRouter;
