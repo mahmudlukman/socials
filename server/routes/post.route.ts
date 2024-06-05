@@ -5,6 +5,7 @@ import {
   createPost,
   getAllPosts,
   updateLikes,
+  updateRepliesReplyLike,
   updateReplyLikes,
 } from '../controllers/post.controller';
 import { isAuthenticated } from '../middleware/auth';
@@ -16,7 +17,5 @@ postRouter.put('/update-likes', isAuthenticated, updateLikes);
 postRouter.put('/add-replies', isAuthenticated, addReplies);
 postRouter.put('/add-reply', isAuthenticated, addReply);
 postRouter.put('/update-replies-react', isAuthenticated, updateReplyLikes);
-// postRouter.put('/add-replies', isAuthenticated, addReplies);
-// postRouter.put('/add-replies', isAuthenticated, addReplies);
-
+postRouter.put('/update-reply-react', isAuthenticated, updateRepliesReplyLike);
 export default postRouter;

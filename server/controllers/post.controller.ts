@@ -102,10 +102,10 @@ export const updateLikes = catchAsyncError(
           },
         });
 
-        if (post.user && userId !== post.user._id) {
+        if (post.user && userId !== post.user?._id.toString()) {
           await Notification.deleteOne({
             'creator._id': userId,
-            userId: post.user._id,
+            userId: post.user?._id.toString(),
             type: 'Like',
           });
         }
@@ -130,12 +130,12 @@ export const updateLikes = catchAsyncError(
           }
         );
 
-        if (post.user && userId !== post.user._id) {
+        if (post.user && userId !== post.user?._id.toString()) {
           await Notification.create({
             creator: req.user,
             type: 'Like',
             title: post.title ? post.title : 'Liked your post',
-            userId: post.user._id,
+            userId: post.user?._id.toString(),
             postId: postId,
           });
         }
@@ -269,7 +269,6 @@ export const addReply = catchAsyncError(
   }
 );
 
-
 // add or remove likes on replies
 export const updateReplyLikes = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -365,3 +364,102 @@ export const updateReplyLikes = catchAsyncError(
   }
 );
 
+// add or remove likes on replies reply
+export const updateRepliesReplyLike = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const postId = req.body.postId;
+      const replyId = req.body.replyId;
+      const singleReplyId = req.body.singleReplyId;
+      const replyTitle = req.body.replyTitle;
+      const post = await Post.findById(postId);
+
+      if (!post) {
+        return res.status(404).json({
+          success: false,
+          message: 'Post not found',
+        });
+      }
+
+      // Find the reply in the 'replies' array based on the given replyId
+      const replyObject = post.replies.find(
+        (reply) => reply._id.toString() === replyId
+      );
+
+      if (!replyObject) {
+        return res.status(404).json({
+          success: false,
+          message: 'Reply not found',
+        });
+      }
+
+      // Find the specific 'reply' object inside 'replyObject.reply' based on the given replyId
+      const reply = replyObject.reply?.find(
+        (reply) => reply._id.toString() === singleReplyId
+      );
+
+      if (!reply) {
+        return res.status(404).json({
+          success: false,
+          message: 'Reply not found',
+        });
+      }
+
+      // Check if the user has already liked the reply
+      const isLikedBefore = reply.likes.some(
+        (like) => like.userId === req.user.id
+      );
+
+      if (isLikedBefore) {
+        // If liked before, remove the like from the reply.likes array
+        reply.likes = reply.likes.filter((like) => like.userId !== req.user.id);
+
+        if (req.user.id !== post.user?._id.toString()) {
+          await Notification.deleteOne({
+            'creator._id': req.user.id,
+            userId: post.user?._id.toString(),
+            type: 'Reply',
+            postId: postId,
+          });
+        }
+
+        await post.save();
+
+        return res.status(200).json({
+          success: true,
+          message: 'Like removed from reply successfully',
+        });
+      }
+
+      // If not liked before, add the like to the reply.likes array
+      const newLike = {
+        name: req.user.name,
+        userName: req.user.userName,
+        userId: req.user.id,
+        userAvatar: req.user.profilePicture.url,
+      };
+
+      reply.likes.push(newLike);
+
+      if (req.user.id !== post.user?._id.toString()) {
+        await Notification.create({
+          creator: req.user,
+          type: 'Like',
+          title: replyTitle ? replyTitle : 'Liked your Reply',
+          userId: post.user?._id.toString(),
+          postId: postId,
+        });
+      }
+
+      await post.save();
+
+      return res.status(200).json({
+        success: true,
+        message: 'Like added to reply successfully',
+      });
+    } catch (error: any) {
+      console.log(error);
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
