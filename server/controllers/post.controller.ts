@@ -278,6 +278,14 @@ export const updateReplyLikes = catchAsyncError(
       const replyId = req.body.replyId;
       const replyTitle = req.body.replyTitle;
 
+      // Ensure req.user is defined
+      if (!req.user) {
+        return res.status(401).json({
+          success: false,
+          message: 'User not authenticated',
+        });
+      }
+
       const post = await Post.findById(postId);
 
       if (!post) {
@@ -307,10 +315,10 @@ export const updateReplyLikes = catchAsyncError(
         // If liked before, remove the like from the reply.likes array
         reply.likes = reply.likes.filter((like) => like.userId !== req.user.id);
 
-        if (req.user.id !== post.user._id) {
+        if (req.user.id !== post.user?.id.toString()) {
           await Notification.deleteOne({
             'creator._id': req.user.id,
-            userId: post.user._id,
+            userId: post.user?.id.toString(),
             type: 'Reply',
             postId: postId,
           });
@@ -329,17 +337,17 @@ export const updateReplyLikes = catchAsyncError(
         name: req.user.name,
         userName: req.user.userName,
         userId: req.user.id,
-        userAvatar: req.user.avatar.url,
+        userAvatar: req.user.profilePicture.url,
       };
 
       reply.likes.push(newLike);
 
-      if (req.user.id !== post.user._id) {
+      if (req.user.id !== post.user?._id.toString()) {
         await Notification.create({
           creator: req.user,
           type: 'Like',
           title: replyTitle ? replyTitle : 'Liked your Reply',
-          userId: post.user._id,
+          userId: post.user?._id.toString(),
           postId: postId,
         });
       }
@@ -356,3 +364,4 @@ export const updateReplyLikes = catchAsyncError(
     }
   }
 );
+
