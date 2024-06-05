@@ -204,7 +204,7 @@ export const addReplies = catchAsyncError(
   }
 );
 
-// add reply in replies
+// add reply in reply
 export const addReply = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -229,7 +229,7 @@ export const addReply = catchAsyncError(
             }
           : null,
         likes: [],
-      };
+      } as any;
 
       // Find the post by its ID
       let post = await Post.findById(postId);
@@ -241,11 +241,16 @@ export const addReply = catchAsyncError(
         });
       }
 
-      // Find the reply by it's ID
+      // Find the reply by its ID
       let data = post.replies.find((reply) => reply._id.toString() === replyId);
 
       if (!data) {
         return next(new ErrorHandler('Reply not found', 401));
+      }
+
+      // Ensure data.reply is an array
+      if (!Array.isArray(data.reply)) {
+        data.reply = [];
       }
 
       data.reply.push(replyData);
@@ -263,6 +268,7 @@ export const addReply = catchAsyncError(
     }
   }
 );
+
 
 // add or remove likes on replies
 export const updateReplyLikes = catchAsyncError(

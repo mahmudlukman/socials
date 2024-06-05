@@ -1,6 +1,7 @@
 import express from 'express';
 import {
   addReplies,
+  addReply,
   createPost,
   getAllPosts,
   updateLikes,
@@ -13,6 +14,7 @@ postRouter.post('/create', isAuthenticated, createPost);
 postRouter.get('/get-posts', isAuthenticated, getAllPosts);
 postRouter.put('/update-likes', isAuthenticated, updateLikes);
 postRouter.put('/add-replies', isAuthenticated, addReplies);
+postRouter.put('/add-reply', isAuthenticated, addReply);
 postRouter.put('/update-replies-react', isAuthenticated, updateReplyLikes);
 // postRouter.put('/add-replies', isAuthenticated, addReplies);
 // postRouter.put('/add-replies', isAuthenticated, addReplies);
