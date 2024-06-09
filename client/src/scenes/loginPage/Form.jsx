@@ -114,7 +114,7 @@ const Form = () => {
         </Typography>
         <form
           sx={{
-            width: '100%', // Fix IE 11 issue.
+            width: '100%',
             marginTop: theme.spacing(3),
           }}
           onSubmit={handleSubmit}
@@ -138,10 +138,10 @@ const Form = () => {
               </>
             )}
             <Input
-              name="email"
-              label="Email Address"
+              name="emailOrUsername"
+              label="email Or Username"
               handleChange={handleChange}
-              type="email"
+              type="emailOrUsername"
             />
             <Input
               name="password"

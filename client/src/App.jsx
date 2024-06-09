@@ -6,6 +6,7 @@ import { CssBaseline, ThemeProvider } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import { themeSettings } from './theme';
 import LoginPage from './scenes/loginPage';
+import HomePage from './scenes/homePage';
 
 const App = () => {
   const mode = useSelector((state) => state.mode);
@@ -19,10 +20,13 @@ const App = () => {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Routes>
-            <Route path="/" element={<LoginPage />} />
+            <Route path="/" element={<Navigate to="home" />} />
+            <Route path="/home" element={<HomePage />} />
             <Route
-              path="/home"
-              element={user ? <HomePage /> : <Navigate to="/" />}
+              path="/auth"
+              element={
+                !user ? <LoginPage /> : <Navigate to="/home" replace={true} />
+              }
             />
             {/* <Route
               path="/profile/:userId"
