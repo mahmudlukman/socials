@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   useLoginMutation,
   useRegisterMutation,
+  useForgotPasswordMutation, // Import the forgot password mutation
 } from '../../redux/features/auth/authApi';
 import { toast } from 'react-hot-toast';
 
@@ -23,15 +24,17 @@ const initialState = {
   firstName: '',
   lastName: '',
   email: '',
+  emailOrUsername: '',
   password: '',
   confirmPassword: '',
 };
 
 const Form = () => {
   const theme = useTheme();
-  const { palette } = useTheme();
+  const { palette } = theme;
   const [form, setForm] = useState(initialState);
   const [isSignup, setIsSignup] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false); // New state for forgot password mode
   const [showPassword, setShowPassword] = useState(false);
   const [
     login,
@@ -43,27 +46,54 @@ const Form = () => {
       isLoading: registerLoading,
       isSuccess: registerSuccess,
       error: registerError,
+      data: registerData,
     },
   ] = useRegisterMutation();
+  const [
+    forgotPassword,
+    {
+      isLoading: forgotPasswordLoading,
+      isSuccess: forgotPasswordSuccess,
+      error: forgotPasswordError,
+    },
+  ] = useForgotPasswordMutation(); // Use the forgot password mutation
   const navigate = useNavigate();
 
-  const switchMode = () => {
+  const switchMode = (mode) => {
     setForm(initialState);
-    setIsSignup((prevIsSignup) => !prevIsSignup);
     setShowPassword(false);
+    if (mode === 'signup') {
+      setIsSignup(true);
+      setIsForgotPassword(false);
+    } else if (mode === 'signin') {
+      setIsSignup(false);
+      setIsForgotPassword(false);
+    } else if (mode === 'forgotPassword') {
+      setIsForgotPassword(true);
+      setIsSignup(false);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isForgotPassword) {
+      await forgotPassword({ email: form.emailOrUsername }); // Change to use emailOrUsername field
+      return;
+    }
+
     if (isSignup && form.password !== form.confirmPassword) {
       toast.error('Passwords do not match!');
       return;
     }
 
     if (isSignup) {
-      await register(form);
+      const { email, password, firstName, lastName } = form;
+      await register({ email, password, firstName, lastName });
     } else {
-      await login(form);
+      await login({
+        emailOrUsername: form.emailOrUsername,
+        password: form.password,
+      });
     }
   };
 
@@ -74,17 +104,32 @@ const Form = () => {
     }
 
     if (registerSuccess) {
-      toast.success('Registration Successful! You can log in to your account.');
+      const successMessage = registerData?.message || 'Registration Successful! You can log in to your account.';
+      toast.success(successMessage);
       navigate('/');
     }
-    if (loginError || registerError) {
+
+    if (forgotPasswordSuccess) {
+      toast.success('Password reset link sent to your email.');
+      switchMode('signin');
+    }
+
+    if (loginError || registerError || forgotPasswordError) {
       const errorMessage =
         loginError?.data?.message ||
         registerError?.data?.message ||
+        forgotPasswordError?.data?.message ||
         'Something went wrong!';
       toast.error(errorMessage);
     }
-  }, [loginSuccess, loginError, registerSuccess, registerError]);
+  }, [
+    loginSuccess,
+    loginError,
+    registerSuccess,
+    registerError,
+    forgotPasswordSuccess,
+    forgotPasswordError,
+  ]);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -109,8 +154,12 @@ const Form = () => {
         >
           <LockOutlined />
         </Avatar>
-        <Typography component="h1" variant="h5">
-          {isSignup ? 'Sign up' : 'Sign in'}
+        <Typography component="h1" variant="h5" marginBottom="10px">
+          {isSignup
+            ? 'Sign up'
+            : isForgotPassword
+            ? 'Forgot Password'
+            : 'Sign in'}
         </Typography>
         <form
           sx={{
@@ -135,27 +184,51 @@ const Form = () => {
                   handleChange={handleChange}
                   half
                 />
+                <Input
+                  name="email"
+                  label="Email"
+                  handleChange={handleChange}
+                  type="email"
+                />
+                <Input
+                  name="password"
+                  label="Password"
+                  handleChange={handleChange}
+                  type={showPassword ? 'text' : 'password'}
+                  handleShowPassword={() => setShowPassword(!showPassword)}
+                />
+                <Input
+                    name="confirmPassword"
+                    label="Repeat Password"
+                    handleChange={handleChange}
+                    type="password"
+                  />
               </>
             )}
-            <Input
-              name="emailOrUsername"
-              label="email Or Username"
-              handleChange={handleChange}
-              type="emailOrUsername"
-            />
-            <Input
-              name="password"
-              label="Password"
-              handleChange={handleChange}
-              type={showPassword ? 'text' : 'password'}
-              handleShowPassword={() => setShowPassword(!showPassword)}
-            />
-            {isSignup && (
+            {!isForgotPassword && !isSignup && (
+              <>
+                <Input
+                  name="emailOrUsername"
+                  label="Email Or Username"
+                  handleChange={handleChange}
+                  type="text"
+                />
+                <Input
+                  name="password"
+                  label="Password"
+                  handleChange={handleChange}
+                  type={showPassword ? 'text' : 'password'}
+                  handleShowPassword={() => setShowPassword(!showPassword)}
+                />
+              </>
+            )}
+            {isForgotPassword && (
               <Input
-                name="confirmPassword"
-                label="Repeat Password"
+                name="emailOrUsername"
+                label="Email or Username"
                 handleChange={handleChange}
-                type="password"
+                type="text"
+                autoFocus
               />
             )}
           </Grid>
@@ -170,22 +243,36 @@ const Form = () => {
               '&:hover': { color: palette.primary.main },
             }}
           >
-            {loginLoading || registerLoading ? (
-              <CircularProgress size={24} color="inherit" />
+            {loginLoading || registerLoading || forgotPasswordLoading ? (
+              <CircularProgress
+                size={24}
+                sx={{ color: palette.background.alt }}
+              />
             ) : isSignup ? (
-              'Sign Up'
+              'Register'
+            ) : isForgotPassword ? (
+              'Send Reset Link'
             ) : (
-              'Sign In'
+              'Login'
             )}
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Button onClick={switchMode}>
+              <Button
+                onClick={() => switchMode(isSignup ? 'signin' : 'signup')}
+              >
                 {isSignup
-                  ? 'Already have an account? Sign in'
-                  : "Don't have an account? Sign Up"}
+                  ? 'Already have an account? Login'
+                  : "Don't have an account? Register"}
               </Button>
             </Grid>
+            {!isSignup && !isForgotPassword && (
+              <Grid item>
+                <Button onClick={() => switchMode('forgotPassword')}>
+                  Forgot Password
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </form>
       </Paper>

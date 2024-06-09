@@ -16,8 +16,8 @@ const App = () => {
   return (
     <div className="app">
       <BrowserRouter>
-        <Toaster position="top-center" reverseOrder={false} />
         <ThemeProvider theme={theme}>
+        <Toaster position="top-center" reverseOrder={false} />
           <CssBaseline />
           <Routes>
             <Route path="/" element={<Navigate to="home" />} />
