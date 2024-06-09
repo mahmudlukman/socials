@@ -1,12 +1,13 @@
-import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom";
-import { useMemo } from "react";
-import { useSelector } from "react-redux";
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
-import { themeSettings } from "./theme";
-import LoginPage from "./scenes/loginPage";
+import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
+import { useMemo } from 'react';
+import { useSelector } from 'react-redux';
+import { Toaster } from 'react-hot-toast';
+import { CssBaseline, ThemeProvider } from '@mui/material';
+import { createTheme } from '@mui/material/styles';
+import { themeSettings } from './theme';
+import LoginPage from './scenes/loginPage';
 
-const App = () =>  {
+const App = () => {
   const mode = useSelector((state) => state.mode);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
   const { user } = useSelector((state) => state.auth);
@@ -14,6 +15,7 @@ const App = () =>  {
   return (
     <div className="app">
       <BrowserRouter>
+        <Toaster position="top-center" reverseOrder={false} />
         <ThemeProvider theme={theme}>
           <CssBaseline />
           <Routes>
@@ -30,7 +32,7 @@ const App = () =>  {
         </ThemeProvider>
       </BrowserRouter>
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;
