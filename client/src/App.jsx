@@ -17,11 +17,18 @@ const App = () => {
     <div className="app">
       <BrowserRouter>
         <ThemeProvider theme={theme}>
-        <Toaster position="top-center" reverseOrder={false} />
+          <Toaster position="top-center" reverseOrder={false} />
           <CssBaseline />
           <Routes>
-            <Route path="/" element={<Navigate to="home" />} />
-            <Route path="/home" element={<HomePage />} />
+            <Route
+              path="/"
+              element={
+                !user ? <LoginPage /> : <Navigate to="/home" replace={true} />
+              }
+            />
+            <Route path="/home" element={
+                !user ? <LoginPage /> : <HomePage replace={true} />
+              } />
             <Route
               path="/auth"
               element={

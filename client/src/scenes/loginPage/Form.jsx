@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   useLoginMutation,
   useRegisterMutation,
-  useForgotPasswordMutation, // Import the forgot password mutation
+  useForgotPasswordMutation,
 } from '../../redux/features/auth/authApi';
 import { toast } from 'react-hot-toast';
 
@@ -34,7 +34,7 @@ const Form = () => {
   const { palette } = theme;
   const [form, setForm] = useState(initialState);
   const [isSignup, setIsSignup] = useState(false);
-  const [isForgotPassword, setIsForgotPassword] = useState(false); // New state for forgot password mode
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [
     login,
@@ -56,7 +56,7 @@ const Form = () => {
       isSuccess: forgotPasswordSuccess,
       error: forgotPasswordError,
     },
-  ] = useForgotPasswordMutation(); // Use the forgot password mutation
+  ] = useForgotPasswordMutation();
   const navigate = useNavigate();
 
   const switchMode = (mode) => {
@@ -77,7 +77,7 @@ const Form = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isForgotPassword) {
-      await forgotPassword({ email: form.emailOrUsername }); // Change to use emailOrUsername field
+      await forgotPassword({ email: form.email });
       return;
     }
 
@@ -211,7 +211,7 @@ const Form = () => {
                   name="emailOrUsername"
                   label="Email Or Username"
                   handleChange={handleChange}
-                  type="text"
+                  type="email"
                 />
                 <Input
                   name="password"
@@ -224,10 +224,10 @@ const Form = () => {
             )}
             {isForgotPassword && (
               <Input
-                name="emailOrUsername"
-                label="Email or Username"
+                name="email"
+                label="Email"
                 handleChange={handleChange}
-                type="text"
+                type="email"
                 autoFocus
               />
             )}
