@@ -234,7 +234,11 @@ export const resetPassword = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { newPassword } = req.body as IResetPassword;
-      const { id } = req.query;
+      const { id } = req.query as any;
+
+      if (!id) {
+        return next(new ErrorHandler('No user ID provided!', 400));
+      }
 
       const user = await UserModel.findById(id).select('+password');
 

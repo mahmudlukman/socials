@@ -7,6 +7,7 @@ import { createTheme } from '@mui/material/styles';
 import { themeSettings } from './theme';
 import LoginPage from './scenes/loginPage';
 import HomePage from './scenes/homePage';
+import ResetPassword from './scenes/loginPage/ResetPassword';
 
 const App = () => {
   const mode = useSelector((state) => state.mode);
@@ -26,15 +27,17 @@ const App = () => {
                 !user ? <LoginPage /> : <Navigate to="/home" replace={true} />
               }
             />
-            <Route path="/home" element={
-                !user ? <LoginPage /> : <HomePage replace={true} />
-              } />
+            <Route
+              path="/home"
+              element={!user ? <LoginPage /> : <HomePage replace={true} />}
+            />
             <Route
               path="/auth"
               element={
                 !user ? <LoginPage /> : <Navigate to="/home" replace={true} />
               }
             />
+            <Route path="/reset-password" element={<ResetPassword />} />
             {/* <Route
               path="/profile/:userId"
               element={isAuth ? <ProfilePage /> : <Navigate to="/" />}
