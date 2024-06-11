@@ -9,7 +9,7 @@ import {
   useTheme,
   CircularProgress,
 } from '@mui/material';
-import { LockOutlined } from '@mui/icons-material';
+import { LockResetOutlined } from '@mui/icons-material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useResetPasswordMutation } from '../../redux/features/auth/authApi';
 import { toast } from 'react-hot-toast';
@@ -83,7 +83,7 @@ const ResetPassword = () => {
             backgroundColor: theme.palette.secondary.main,
           }}
         >
-          <LockOutlined />
+          <LockResetOutlined />
         </Avatar>
         <Typography component="h1" variant="h5" marginBottom="10px">
           Reset Password

@@ -35,7 +35,7 @@ export const registerUser = catchAsyncError(
       const activationToken = createActivationToken(user);
 
       // const activationCode = activationToken.activationCode;
-      const activationUrl = `http://localhost:5173/${activationToken}`;
+      const activationUrl = `http://localhost:5173/activate-user?token=${activationToken}`;
 
       const data = { user: { name: user.name }, activationUrl };
       const html = await ejs.renderFile(

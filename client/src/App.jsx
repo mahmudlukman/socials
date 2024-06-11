@@ -8,6 +8,7 @@ import { themeSettings } from './theme';
 import LoginPage from './scenes/loginPage';
 import HomePage from './scenes/homePage';
 import ResetPassword from './scenes/loginPage/ResetPassword';
+import ActivationPage from './scenes/loginPage/Activation';
 
 const App = () => {
   const mode = useSelector((state) => state.mode);
@@ -38,6 +39,8 @@ const App = () => {
               }
             />
             <Route path="/reset-password" element={<ResetPassword />} />
+
+            <Route path="/activate-user" element={<ActivationPage />} />
             {/* <Route
               path="/profile/:userId"
               element={isAuth ? <ProfilePage /> : <Navigate to="/" />}
