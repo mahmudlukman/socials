@@ -14,10 +14,9 @@ import { toast } from 'react-hot-toast';
 
 const ActivationPage = () => {
   const theme = useTheme();
-  const { palette } = theme;
   const navigate = useNavigate();
   const location = useLocation();
-  const [activation, { isSuccess, error, isLoading }] = useActivationMutation();
+  const [activation, { isSuccess, error }] = useActivationMutation();
 
   const query = new URLSearchParams(location.search);
   const activation_token = query.get('token');

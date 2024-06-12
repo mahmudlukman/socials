@@ -5,15 +5,16 @@ import { Toaster } from 'react-hot-toast';
 import { CssBaseline, ThemeProvider } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
 import { themeSettings } from './theme';
-import LoginPage from './scenes/loginPage';
+// import { ThemeProviderWrapper } from './themeProvider.jsx';
+import AuthPage from './scenes/authPage';
 import HomePage from './scenes/homePage';
-import ResetPassword from './scenes/loginPage/ResetPassword';
-import ActivationPage from './scenes/loginPage/Activation';
+import ResetPassword from './scenes/authPage/ResetPassword';
+import ActivationPage from './scenes/authPage/Activation';
 
 const App = () => {
-  const mode = useSelector((state) => state.mode);
+  // const mode = useSelector((state) => state.auth);
+  const { user, mode } = useSelector((state) => state.auth);
   const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
-  const { user } = useSelector((state) => state.auth);
 
   return (
     <div className="app">
@@ -25,17 +26,17 @@ const App = () => {
             <Route
               path="/"
               element={
-                !user ? <LoginPage /> : <Navigate to="/home" replace={true} />
+                !user ? <AuthPage /> : <Navigate to="/home" replace={true} />
               }
             />
             <Route
               path="/home"
-              element={!user ? <LoginPage /> : <HomePage replace={true} />}
+              element={!user ? <AuthPage /> : <HomePage replace={true} />}
             />
             <Route
               path="/auth"
               element={
-                !user ? <LoginPage /> : <Navigate to="/home" replace={true} />
+                !user ? <AuthPage /> : <Navigate to="/home" replace={true} />
               }
             />
             <Route path="/reset-password" element={<ResetPassword />} />
