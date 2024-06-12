@@ -1,25 +1,22 @@
+import React from 'react';
 import { BrowserRouter, Navigate, Routes, Route } from 'react-router-dom';
-import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
-import { CssBaseline, ThemeProvider } from '@mui/material';
-import { createTheme } from '@mui/material/styles';
-import { themeSettings } from './theme';
-// import { ThemeProviderWrapper } from './themeProvider.jsx';
+import { CssBaseline } from '@mui/material';
 import AuthPage from './scenes/authPage';
 import HomePage from './scenes/homePage';
 import ResetPassword from './scenes/authPage/ResetPassword';
 import ActivationPage from './scenes/authPage/Activation';
+import { ThemeProvider } from './themeProvider'; // Import the ThemeProvider
+import Navbar from './scenes/navbar'; // Adjust the import path as necessary
 
 const App = () => {
-  // const mode = useSelector((state) => state.auth);
-  const { user, mode } = useSelector((state) => state.auth);
-  const theme = useMemo(() => createTheme(themeSettings(mode)), [mode]);
+  const { user } = useSelector((state) => state.auth);
 
   return (
     <div className="app">
       <BrowserRouter>
-        <ThemeProvider theme={theme}>
+        <ThemeProvider>
           <Toaster position="top-center" reverseOrder={false} />
           <CssBaseline />
           <Routes>
@@ -40,12 +37,7 @@ const App = () => {
               }
             />
             <Route path="/reset-password" element={<ResetPassword />} />
-
             <Route path="/activate-user" element={<ActivationPage />} />
-            {/* <Route
-              path="/profile/:userId"
-              element={isAuth ? <ProfilePage /> : <Navigate to="/" />}
-            /> */}
           </Routes>
         </ThemeProvider>
       </BrowserRouter>
