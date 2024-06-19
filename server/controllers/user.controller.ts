@@ -24,13 +24,15 @@ interface IUpdateUserInfo {
   name?: string;
   userName?: string;
   bio?: string;
+  occupation?: string;
+  location?: string;
 }
 
 // update user info
 export const updateUserInfo = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, userName, bio } = req.body as IUpdateUserInfo;
+      const { name, userName, bio, occupation, location } = req.body as IUpdateUserInfo;
       const userId = req.user?._id;
       const user = await UserModel.findById(userId);
 
@@ -41,6 +43,8 @@ export const updateUserInfo = catchAsyncError(
       if (name) user.name = name;
       if (userName) user.userName = userName;
       if (bio) user.bio = bio;
+      if (occupation) user.occupation = occupation;
+      if (location) user.location = location;
 
       await user.save();
 

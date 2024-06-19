@@ -50,7 +50,7 @@ const UserWidget = ({ userId, picturePath }) => {
         onClick={() => navigate(`/profile/${userId}`)}
       >
         <FlexBetween gap="1rem">
-          <UserImage image={user.profilePicture} />
+          <UserImage image={user.profilePicture.url} />
           <Box>
             <Typography
               variant="h4"
@@ -81,8 +81,11 @@ const UserWidget = ({ userId, picturePath }) => {
       {/* SECOND ROW */}
       <Box p="1rem 0">
         <Box display="flex" alignItems="center" gap="1rem" mb="0.5rem">
-          {/* <LocationOnOutlined fontSize="large" /> */}
           <Typography color={medium}>{user.bio}</Typography>
+        </Box>
+        <Box display="flex" alignItems="center" gap="1rem" mb="0.5rem">
+          <LocationOnOutlined fontSize="large" />
+          <Typography color={medium}>{user.location}</Typography>
         </Box>
         <Box display="flex" alignItems="center" gap="1rem">
           <WorkOutlineOutlined fontSize="large" />
