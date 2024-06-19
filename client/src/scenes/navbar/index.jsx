@@ -8,7 +8,7 @@ import {
   MenuItem,
   FormControl,
   useMediaQuery,
-  useTheme
+  useTheme,
 } from '@mui/material';
 import {
   Search,
@@ -37,6 +37,12 @@ const Navbar = () => {
   const { toggleTheme } = useThemeContext();
   const theme = useTheme();
 
+  const neutralLight = theme.palette.neutral.light;
+  const dark = theme.palette.neutral.dark;
+  const background = theme.palette.background.default;
+  const primaryLight = theme.palette.primary.light;
+  const alt = theme.palette.background.alt;
+
   const { refetch } = useLogoutQuery(undefined, {
     skip: !logout,
     refetchOnMountOrArgChange: true,
@@ -47,7 +53,7 @@ const Navbar = () => {
   };
 
   return (
-    <FlexBetween padding="1rem 6%" backgroundColor="inherit">
+    <FlexBetween padding="1rem 6%" backgroundColor={alt}>
       <FlexBetween gap="1.75rem">
         <Typography
           fontWeight="bold"
@@ -56,7 +62,7 @@ const Navbar = () => {
           onClick={() => navigate('/home')}
           sx={{
             '&:hover': {
-              color: 'inherit',
+              color: primaryLight,
               cursor: 'pointer',
             },
           }}
@@ -64,7 +70,12 @@ const Navbar = () => {
           Socials
         </Typography>
         {isNonMobileScreens && (
-          <FlexBetween borderRadius="9px" gap="3rem" padding="0.1rem 1.5rem">
+          <FlexBetween
+            backgroundColor={neutralLight}
+            borderRadius="9px"
+            gap="3rem"
+            padding="0.1rem 1.5rem"
+          >
             <InputBase placeholder="Search..." />
             <IconButton>
               <Search />
@@ -76,24 +87,29 @@ const Navbar = () => {
       {isNonMobileScreens ? (
         <FlexBetween gap="2rem">
           <IconButton onClick={toggleTheme}>
-          {theme.palette.mode === 'dark' ? (
-              <LightMode sx={{ fontSize: '25px' }} />
+            {theme.palette.mode === 'dark' ? (
+              <LightMode sx={{ fontSize: '25px', color: dark }} />
             ) : (
               <DarkMode sx={{ fontSize: '25px' }} />
             )}
           </IconButton>
-          <Message sx={{ fontSize: '25px' }} />
-          <Notifications sx={{ fontSize: '25px' }} />
+          <Message sx={{ fontSize: '25px', cursor: 'pointer' }} />
+          <Notifications sx={{ fontSize: '25px', cursor: 'pointer' }} />
+          <Help sx={{ fontSize: '25px', cursor: 'pointer' }} />
           <FormControl variant="standard" value={`@${user.userName}`}>
             <Select
               value={`@${user.userName}`}
               sx={{
+                backgroundColor: neutralLight,
                 width: '150px',
                 borderRadius: '0.25rem',
                 p: '0.25rem 1rem',
                 '& .MuiSvgIcon-root': {
                   pr: '0.25rem',
                   width: '3rem',
+                },
+                '& .MuiSelect-select:focus': {
+                  backgroundColor: neutralLight,
                 },
               }}
               input={<InputBase />}
@@ -122,6 +138,7 @@ const Navbar = () => {
           zIndex="10"
           maxWidth="500px"
           minWidth="300px"
+          backgroundColor={background}
         >
           <Box display="flex" justifyContent="flex-end" p="1rem">
             <IconButton
@@ -139,25 +156,29 @@ const Navbar = () => {
             gap="3rem"
           >
             <IconButton sx={{ fontSize: '25px' }} onClick={toggleTheme}>
-            {theme.palette.mode === 'dark' ? (
-              <LightMode sx={{ fontSize: '25px' }} />
-            ) : (
-              <DarkMode sx={{ fontSize: '25px' }} />
-            )}
+              {theme.palette.mode === 'dark' ? (
+                <LightMode sx={{ fontSize: '25px', color: dark }} />
+              ) : (
+                <DarkMode sx={{ fontSize: '25px' }} />
+              )}
             </IconButton>
-            <Message sx={{ fontSize: '25px' }} />
-            <Notifications sx={{ fontSize: '25px' }} />
-            <Help sx={{ fontSize: '25px' }} />
+            <Message sx={{ fontSize: '25px', cursor: 'pointer' }} />
+            <Notifications sx={{ fontSize: '25px', cursor: 'pointer' }} />
+            <Help sx={{ fontSize: '25px', cursor: 'pointer' }} />
             <FormControl variant="standard" value={`@${user.userName}`}>
               <Select
                 value={`@${user.userName}`}
                 sx={{
+                  backgroundColor: neutralLight,
                   width: '150px',
                   borderRadius: '0.25rem',
                   p: '0.25rem 1rem',
                   '& .MuiSvgIcon-root': {
                     pr: '0.25rem',
                     width: '3rem',
+                  },
+                  '& .MuiSelect-select:focus': {
+                    backgroundColor: neutralLight,
                   },
                 }}
                 input={<InputBase />}
