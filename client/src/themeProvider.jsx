@@ -1,5 +1,6 @@
 import React, { createContext, useState, useMemo, useContext } from 'react';
 import { createTheme, ThemeProvider as MuiThemeProvider } from '@mui/material/styles';
+import { themeSettings } from './theme';
 
 const ThemeContext = createContext();
 
@@ -7,12 +8,7 @@ export const ThemeProvider = ({ children }) => {
   const [darkMode, setDarkMode] = useState(true);
 
   const theme = useMemo(
-    () =>
-      createTheme({
-        palette: {
-          mode: darkMode ? 'dark' : 'light',
-        },
-      }),
+    () => createTheme(themeSettings(darkMode ? 'dark' : 'light')),
     [darkMode]
   );
 

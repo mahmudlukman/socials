@@ -8,6 +8,7 @@ import {
   MenuItem,
   FormControl,
   useMediaQuery,
+  useTheme
 } from '@mui/material';
 import {
   Search,
@@ -32,7 +33,9 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const isNonMobileScreens = useMediaQuery('(min-width: 1000px)');
-  const { darkMode, toggleTheme } = useThemeContext();
+  // const { darkMode, toggleTheme } = useThemeContext();
+  const { toggleTheme } = useThemeContext();
+  const theme = useTheme();
 
   const { refetch } = useLogoutQuery(undefined, {
     skip: !logout,
@@ -73,18 +76,17 @@ const Navbar = () => {
       {isNonMobileScreens ? (
         <FlexBetween gap="2rem">
           <IconButton onClick={toggleTheme}>
-            {darkMode ? (
-              <DarkMode sx={{ fontSize: '25px' }} />
-            ) : (
+          {theme.palette.mode === 'dark' ? (
               <LightMode sx={{ fontSize: '25px' }} />
+            ) : (
+              <DarkMode sx={{ fontSize: '25px' }} />
             )}
           </IconButton>
           <Message sx={{ fontSize: '25px' }} />
           <Notifications sx={{ fontSize: '25px' }} />
-          <Help sx={{ fontSize: '25px' }} />
-          <FormControl variant="standard" value={user.name}>
+          <FormControl variant="standard" value={`@${user.userName}`}>
             <Select
-              value={user.name}
+              value={`@${user.userName}`}
               sx={{
                 width: '150px',
                 borderRadius: '0.25rem',
@@ -96,8 +98,8 @@ const Navbar = () => {
               }}
               input={<InputBase />}
             >
-              <MenuItem value={user.name}>
-                <Typography>{user.name}</Typography>
+              <MenuItem value={`@${user.userName}`}>
+                <Typography>{`@${user.userName}`}</Typography>
               </MenuItem>
               <MenuItem onClick={handleLogout}>Log Out</MenuItem>
             </Select>
@@ -137,18 +139,18 @@ const Navbar = () => {
             gap="3rem"
           >
             <IconButton sx={{ fontSize: '25px' }} onClick={toggleTheme}>
-              {darkMode ? (
-                <DarkMode sx={{ fontSize: '25px' }} />
-              ) : (
-                <LightMode sx={{ fontSize: '25px' }} />
-              )}
+            {theme.palette.mode === 'dark' ? (
+              <LightMode sx={{ fontSize: '25px' }} />
+            ) : (
+              <DarkMode sx={{ fontSize: '25px' }} />
+            )}
             </IconButton>
             <Message sx={{ fontSize: '25px' }} />
             <Notifications sx={{ fontSize: '25px' }} />
             <Help sx={{ fontSize: '25px' }} />
-            <FormControl variant="standard" value={user.name}>
+            <FormControl variant="standard" value={`@${user.userName}`}>
               <Select
-                value={user.name}
+                value={`@${user.userName}`}
                 sx={{
                   width: '150px',
                   borderRadius: '0.25rem',
@@ -160,8 +162,8 @@ const Navbar = () => {
                 }}
                 input={<InputBase />}
               >
-                <MenuItem value={user.name}>
-                  <Typography>{user.name}</Typography>
+                <MenuItem value={`@${user.userName}`}>
+                  <Typography>{`@${user.userName}`}</Typography>
                 </MenuItem>
                 <MenuItem onClick={handleLogout}>Log Out</MenuItem>
               </Select>
