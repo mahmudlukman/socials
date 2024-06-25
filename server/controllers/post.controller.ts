@@ -71,7 +71,22 @@ export const getAllPosts = catchAsyncError(
         createdAt: -1,
       });
 
-      res.status(201).json({ success: true, posts });
+      res.status(200).json({ success: true, posts });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+// get all posts
+export const getAllUserPosts = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.user.id;
+      const posts = await Post.find({ userId }).sort({
+        createdAt: -1,
+      });
+
+      res.status(200).json({ success: true, posts });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
     }
@@ -277,7 +292,6 @@ export const updateReplyLikes = catchAsyncError(
       const replyId = req.body.replyId;
       const replyTitle = req.body.replyTitle;
 
-      // Ensure req.user is defined
       if (!req.user) {
         return res.status(401).json({
           success: false,
@@ -294,7 +308,6 @@ export const updateReplyLikes = catchAsyncError(
         });
       }
 
-      // Find the reply in the 'replies' array based on the given replyId
       const reply = post.replies.find(
         (reply) => reply._id.toString() === replyId
       );
@@ -311,7 +324,6 @@ export const updateReplyLikes = catchAsyncError(
       );
 
       if (isLikedBefore) {
-        // If liked before, remove the like from the reply.likes array
         reply.likes = reply.likes.filter((like) => like.userId !== req.user.id);
 
         if (req.user.id !== post.user?.id.toString()) {
@@ -331,7 +343,6 @@ export const updateReplyLikes = catchAsyncError(
         });
       }
 
-      // If not liked before, add the like to the reply.likes array
       const newLike = {
         name: req.user.name,
         userName: req.user.userName,
@@ -381,7 +392,6 @@ export const updateRepliesReplyLike = catchAsyncError(
         });
       }
 
-      // Find the reply in the 'replies' array based on the given replyId
       const replyObject = post.replies.find(
         (reply) => reply._id.toString() === replyId
       );
@@ -393,7 +403,6 @@ export const updateRepliesReplyLike = catchAsyncError(
         });
       }
 
-      // Find the specific 'reply' object inside 'replyObject.reply' based on the given replyId
       const reply = replyObject.reply?.find(
         (reply) => reply._id.toString() === singleReplyId
       );
@@ -405,13 +414,11 @@ export const updateRepliesReplyLike = catchAsyncError(
         });
       }
 
-      // Check if the user has already liked the reply
       const isLikedBefore = reply.likes.some(
         (like) => like.userId === req.user.id
       );
 
       if (isLikedBefore) {
-        // If liked before, remove the like from the reply.likes array
         reply.likes = reply.likes.filter((like) => like.userId !== req.user.id);
 
         if (req.user.id !== post.user?._id.toString()) {
