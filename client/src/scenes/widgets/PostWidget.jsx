@@ -1,24 +1,30 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPosts } from "state";
+import {
+  useGetPostsQuery,
+  useGetUserPostsQuery,
+} from '../../redux/features/post/postApi';
 import PostWidget from "./PostWidget";
 
 const PostsWidget = ({ userId, isProfile = false }) => {
-  const dispatch = useDispatch();
-  const posts = useSelector((state) => state.posts);
-  const token = useSelector((state) => state.token);
+  const { user } = useSelector((state) => state.auth);
+  const { data: posts, isLoading, isError } = useGetPostsQuery();
+  const { data: userPosts } = useGetUserPostsQuery();
+
+  console.log(posts)
 
   useEffect(() => {
-    if (isProfile) {
-      getUserPosts();
-    } else {
-      getPosts();
-    }
+    posts()
+    // if (isProfile) {
+    //   posts();
+    // } else {
+    //   userPosts();
+    // }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <>
-      {posts.map(
+      {posts?.map(
         ({
           _id,
           userId,
