@@ -11,11 +11,10 @@ import WidgetWrapper from '../../components/WidgetWrapper';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import LinkedIn from '../../assets/linkedin.png'
-import Twitter from '../../assets/twitter.png'
+import LinkedIn from '../../assets/linkedin.png';
+import Twitter from '../../assets/twitter.png';
 
 const UserWidget = ({ userId, picturePath }) => {
-  // const [user, setUser] = useState(null);
   const { palette } = useTheme();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
@@ -50,7 +49,12 @@ const UserWidget = ({ userId, picturePath }) => {
         onClick={() => navigate(`/profile/${userId}`)}
       >
         <FlexBetween gap="1rem">
-          <UserImage image={user.profilePicture.url} />
+          <UserImage
+            image={
+              user.profilePicture.url ||
+              'https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png'
+            }
+          />
           <Box>
             <Typography
               variant="h4"
@@ -65,6 +69,7 @@ const UserWidget = ({ userId, picturePath }) => {
             >
               {user.name}
             </Typography>
+            <Typography color={medium}>@{user.userName}</Typography>
             <Typography color={medium}>
               {user.followers.length} followers
             </Typography>

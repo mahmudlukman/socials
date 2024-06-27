@@ -32,7 +32,8 @@ interface IUpdateUserInfo {
 export const updateUserInfo = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { name, userName, bio, occupation, location } = req.body as IUpdateUserInfo;
+      const { name, userName, bio, occupation, location } =
+        req.body as IUpdateUserInfo;
       const userId = req.user?._id;
       const user = await UserModel.findById(userId);
 
@@ -189,9 +190,14 @@ export const followUnfollowUser = catchAsyncError(
           type: 'Follow',
         });
 
+        const updatedUser = await UserModel.findById(loggedInUserId)
+          .populate('followers.userId')
+          .populate('following.userId');
+
         res.status(200).json({
           success: true,
           message: 'User unfollowed successfully',
+          user: updatedUser,
         });
       } else {
         await UserModel.updateOne(
@@ -211,9 +217,14 @@ export const followUnfollowUser = catchAsyncError(
           userId: followUserId,
         });
 
+        const updatedUser = await UserModel.findById(loggedInUserId)
+          .populate('followers.userId')
+          .populate('following.userId');
+
         res.status(200).json({
           success: true,
           message: 'User followed successfully',
+          user: updatedUser,
         });
       }
     } catch (error: any) {

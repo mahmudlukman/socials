@@ -84,6 +84,7 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
       {
         userId: {
           type: String,
+          ref: 'User'
         },
       },
     ],
@@ -91,6 +92,7 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
       {
         userId: {
           type: String,
+          ref: 'User'
         },
       },
     ],
