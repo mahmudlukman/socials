@@ -22,12 +22,12 @@ const FriendListWidget = ({ user }) => {
       <Box display="flex" flexDirection="column" gap="1.5rem">
         {user.followers.map((follower) => (
           <Friend
-            key={follower.userId._id}
-            friendId={follower.userId._id}
-            name={follower.userId.name}
-            bio={follower.userId.occupation}
+            key={follower._id}
+            friendId={follower._id}
+            name={follower.name}
+            bio={follower.occupation}
             userProfilePicture={
-              follower.userId.userProfilePicture ||
+              follower.profilePicture?.url ||
               'https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png'
             }
           />

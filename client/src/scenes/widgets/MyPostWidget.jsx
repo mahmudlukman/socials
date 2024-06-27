@@ -38,7 +38,12 @@ const MyPostWidget = ({ picturePath }) => {
   return (
     <WidgetWrapper>
       <FlexBetween gap="1.5rem">
-        <UserImage image={user.profilePicture.url} />
+        <UserImage
+          image={
+            'https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png' ||
+            user.profilePicture.url
+          }
+        />
         <InputBase
           placeholder="What's on your mind..."
           // onChange={(e) => setPost(e.target.value)}
@@ -112,23 +117,23 @@ const MyPostWidget = ({ picturePath }) => {
         {isNonMobileScreens ? (
           <>
             <FlexBetween gap="0.25rem">
-              <GifBoxOutlined sx={{ color: mediumMain }}/>
+              <GifBoxOutlined sx={{ color: mediumMain }} />
               <Typography color={mediumMain}>Clip</Typography>
             </FlexBetween>
 
             <FlexBetween gap="0.25rem">
-              <AttachFileOutlined sx={{ color: mediumMain }}/>
+              <AttachFileOutlined sx={{ color: mediumMain }} />
               <Typography color={mediumMain}>Attachment</Typography>
             </FlexBetween>
 
             <FlexBetween gap="0.25rem">
-              <MicOutlined sx={{ color: mediumMain }}/>
+              <MicOutlined sx={{ color: mediumMain }} />
               <Typography color={mediumMain}>Audio</Typography>
             </FlexBetween>
           </>
         ) : (
           <FlexBetween gap="0.25rem">
-            <MoreHorizOutlined sx={{ color: mediumMain }}/>
+            <MoreHorizOutlined sx={{ color: mediumMain }} />
           </FlexBetween>
         )}
 

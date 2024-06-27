@@ -1,61 +1,22 @@
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useGetPostsQuery, useGetUserPostsQuery } from '../../redux/features/post/postApi';
+import { useGetPostsQuery } from '../../redux/features/post/postApi';
 import PostWidget from './PostWidget';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Box } from '@mui/material';
 
-const PostsWidget = ({ isProfile = false }) => {
-  const { user } = useSelector((state) => state.auth);
-  const { data: postsData, isLoading: isPostsLoading, isError: isPostsError } = useGetPostsQuery();
-  const { data: userPostsData, isLoading: isUserPostsLoading, isError: isUserPostsError } = useGetUserPostsQuery(user?._id);
-
-  useEffect(() => {
-    console.log("Posts Data:", postsData);
-    console.log("User Posts Data:", userPostsData);
-  }, [postsData, userPostsData]);
-
-  const posts = isProfile ? userPostsData : postsData;
-  const isLoading = isProfile ? isUserPostsLoading : isPostsLoading;
-  const isError = isProfile ? isUserPostsError : isPostsError;
+const PostsWidget = ({ user, isProfile = false }) => {
+  const { data: postData, isLoading } = useGetPostsQuery();
 
   if (isLoading) {
     return <CircularProgress />;
+  } else if (!postData || postData.posts.length === 0) {
+    return <Typography>No Posts</Typography>;
   }
-
-  if (isError) {
-    return <div>Error loading posts</div>;
-  }
-
-  // Check if posts is an array
-  if (!Array.isArray(posts?.posts)) {
-    return <div>Unexpected data format</div>;
-  }
-
   return (
     <>
-      {posts?.posts?.map(
-        ({
-          _id,
-          title,
-          image,
-          user,
-          likes,
-          replies,
-          createdAt,
-        }) => (
-          <PostWidget
-            key={_id}
-            postId={_id}
-            title={title}
-            image={image?.url}
-            userName={user.userName}
-            userAvatar={user.userAvatar}
-            likes={likes}
-            replies={replies}
-            createdAt={createdAt}
-          />
-        )
-      )}
+      {postData.posts.map((post) => (
+        <Box key={post._id}>
+          <PostWidget post={post} user={user} />
+        </Box>
+      ))}
     </>
   );
 };

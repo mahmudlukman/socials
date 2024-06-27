@@ -22,24 +22,6 @@ const UserWidget = ({ userId, picturePath }) => {
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
 
-  // useEffect(() => {
-  //   getUser();
-  // }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // if (!user) {
-  //   return null;
-  // }
-
-  // const {
-  //   firstName,
-  //   lastName,
-  //   location,
-  //   occupation,
-  //   viewedProfile,
-  //   impressions,
-  //   friends,
-  // } = user;
-
   return (
     <WidgetWrapper>
       {/* FIRST ROW */}
@@ -51,8 +33,8 @@ const UserWidget = ({ userId, picturePath }) => {
         <FlexBetween gap="1rem">
           <UserImage
             image={
-              user.profilePicture.url ||
-              'https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png'
+              'https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png' ||
+              user.profilePicture.url
             }
           />
           <Box>
