@@ -1,10 +1,26 @@
 import {
   ChatBubbleOutlineOutlined,
+  ExpandMore,
+  Favorite,
   FavoriteBorderOutlined,
   FavoriteOutlined,
+  MoreVert,
+  Share,
   ShareOutlined,
 } from '@mui/icons-material';
-import { Box, Divider, IconButton, Typography, useTheme } from '@mui/material';
+import {
+  Avatar,
+  Box,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  CardMedia,
+  Divider,
+  IconButton,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import FlexBetween from '../../components/FlexBetween';
 import Friend from '../../components/Friend';
 import WidgetWrapper from '../../components/WidgetWrapper';
@@ -20,36 +36,55 @@ const PostWidget = ({ post }) => {
   const primary = palette.primary.main;
 
   return (
-    <WidgetWrapper m="2rem 0">
-      <Box sx={{ display: 'flex' }}>
-        <Box sx={{ mr: '10px' }}>
-          <UserImage
-            image={
-              'https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png' ||
-              user.profilePicture.url
-            }
+    <Card
+      sx={{
+        padding: '1.5rem 1.5rem 0.75rem 1.5rem',
+        backgroundColor: palette.background.alt,
+        borderRadius: '0.75rem',
+        m: '2rem 0',
+      }}
+    >
+      <CardHeader
+        avatar={
+          <Avatar
+            sx={{ bgcolor: 'grey' }}
+            aria-label="avatar"
+            src={user?.profilePicture?.url || ''}
+          >
+            {!user?.profilePicture?.url && user?.name?.charAt(0)}
+          </Avatar>
+        }
+        action={
+          <IconButton aria-label="settings">
+            <MoreVert />
+          </IconButton>
+        }
+        title={`@${user.userName}`}
+        subheader={moment(post.createdAt).fromNow()}
+      />
+      <CardContent>
+        <Typography variant="body2" color="text.secondary">
+          {post.title}
+        </Typography>
+        {post.image && (
+          <CardMedia
+            sx={{ borderRadius: '10px', mt: '5px' }}
+            component="img"
+            height="194"
+            image={post.image.url}
+            alt="img"
           />
-        </Box>
-        <Typography color={main} sx={{ mt: '1rem', mr: '10px' }}>
-          @{user.userName}
-        </Typography>
-        <Typography color={main} sx={{ mt: '1rem' }}>
-          - {moment(post.createdAt).fromNow()}
-        </Typography>
-      </Box>
-      <Typography color={main} sx={{ mt: '1rem' }}>
-        {post.title}
-      </Typography>
-      {post.image && (
-        <img
-          width="100%"
-          height="auto"
-          alt="post"
-          style={{ borderRadius: '0.75rem', marginTop: '0.75rem' }}
-          src={post.image.url}
-        />
-      )}
-    </WidgetWrapper>
+        )}
+      </CardContent>
+      <CardActions disableSpacing>
+        <IconButton aria-label="add to favorites">
+          <Favorite />
+        </IconButton>
+        <IconButton aria-label="share">
+          <Share />
+        </IconButton>
+      </CardActions>
+    </Card>
   );
 };
 

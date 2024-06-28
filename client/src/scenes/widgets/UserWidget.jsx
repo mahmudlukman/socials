@@ -4,7 +4,7 @@ import {
   LocationOnOutlined,
   WorkOutlineOutlined,
 } from '@mui/icons-material';
-import { Box, Typography, Divider, useTheme } from '@mui/material';
+import { Box, Typography, Divider, useTheme, Avatar } from '@mui/material';
 import UserImage from '../../components/UserImage';
 import FlexBetween from '../../components/FlexBetween';
 import WidgetWrapper from '../../components/WidgetWrapper';
@@ -28,15 +28,16 @@ const UserWidget = ({ userId, picturePath }) => {
       <FlexBetween
         gap="0.5rem"
         pb="1.1rem"
-        onClick={() => navigate(`/profile/${userId}`)}
+        // onClick={() => navigate(`/profile/${userId}`)}
       >
         <FlexBetween gap="1rem">
-          <UserImage
-            image={
-              'https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png' ||
-              user.profilePicture.url
-            }
-          />
+          <Avatar
+            sx={{ bgcolor: 'grey' }}
+            aria-label="avatar"
+            src={user?.profilePicture?.url || ''}
+          >
+            {!user?.profilePicture?.url && user?.name?.charAt(0)}
+          </Avatar>
           <Box>
             <Typography
               variant="h4"

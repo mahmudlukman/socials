@@ -211,7 +211,7 @@ const Form = () => {
                   name="emailOrUsername"
                   label="Email Or Username"
                   handleChange={handleChange}
-                  type="email"
+                  type="text"
                 />
                 <Input
                   name="password"

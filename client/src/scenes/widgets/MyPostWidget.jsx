@@ -16,6 +16,7 @@ import {
   Button,
   IconButton,
   useMediaQuery,
+  Avatar,
 } from '@mui/material';
 import FlexBetween from '../../components/FlexBetween';
 // import Dropzone from "react-dropzone";
@@ -38,12 +39,13 @@ const MyPostWidget = ({ picturePath }) => {
   return (
     <WidgetWrapper>
       <FlexBetween gap="1.5rem">
-        <UserImage
-          image={
-            'https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png' ||
-            user.profilePicture.url
-          }
-        />
+        <Avatar
+          sx={{ bgcolor: 'grey' }}
+          aria-label="avatar"
+          src={user?.profilePicture?.url || ''}
+        >
+          {!user?.profilePicture?.url && user?.name?.charAt(0)}
+        </Avatar>
         <InputBase
           placeholder="What's on your mind..."
           // onChange={(e) => setPost(e.target.value)}

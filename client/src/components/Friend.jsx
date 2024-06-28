@@ -1,5 +1,5 @@
 import { PersonAddOutlined, PersonRemoveOutlined } from '@mui/icons-material';
-import { Box, IconButton, Typography, useTheme } from '@mui/material';
+import { Avatar, Box, IconButton, Typography, useTheme } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import FlexBetween from './FlexBetween';
@@ -23,13 +23,10 @@ const Friend = ({ friendId, name, bio, userProfilePicture }) => {
   return (
     <FlexBetween>
       <FlexBetween gap="1rem">
-        <UserImage
-          image={
-            userProfilePicture ||
-            'https://user-images.githubusercontent.com/194400/49531010-48dad180-f8b1-11e8-8d89-1e61320e1d82.png'
-          }
-          size="55px"
-        />
+        {/* <Avatar sx={{ bgcolor: 'grey' }} aria-label="avatar" src="image">
+          {user.name.charAt(0)}
+        </Avatar> */}
+
         <Box
           onClick={() => {
             navigate(`/profile/${friendId}`);
