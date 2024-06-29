@@ -7,10 +7,13 @@ import {
   MoreVert,
   Share,
   ShareOutlined,
+  ThumbUpAlt,
+  ThumbUpAltOutlined,
 } from '@mui/icons-material';
 import {
   Avatar,
   Box,
+  Button,
   Card,
   CardActions,
   CardContent,
@@ -21,19 +24,58 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import FlexBetween from '../../components/FlexBetween';
-import Friend from '../../components/Friend';
-import WidgetWrapper from '../../components/WidgetWrapper';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import UserImage from '../../components/UserImage';
+import {
+  useUpdateLikesMutation,
+  useGetPostsQuery,
+} from '../../redux/features/post/postApi';
 import moment from 'moment';
 
 const PostWidget = ({ post }) => {
   const { palette } = useTheme();
   const { user } = useSelector((state) => state.auth);
+  const [likes, setLikes] = useState(post?.likes || []);
+  const [updateLikes] = useUpdateLikesMutation();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
+
+  const hasLikedPost = likes.some((like) => like.userId === user._id);
+
+  const handleLike = async () => {
+    try {
+      const response = await updateLikes({ postId: post._id }).unwrap();
+      setLikes(response.likes || []); // Ensure likes is always an array
+    } catch (error) {
+      console.error("Error updating likes: ", error);
+    }
+  };
+
+  const Likes = () => {
+    if (likes.length > 0) {
+      return likes.some((like) => like.userId === user._id) ? (
+        <>
+          <ThumbUpAlt fontSize="small" />
+          &nbsp;
+          {likes.length > 2
+            ? `You and ${likes.length - 1} others`
+            : `${likes.length} like${likes.length > 1 ? 's' : ''}`}
+        </>
+      ) : (
+        <>
+          <ThumbUpAltOutlined fontSize="small" />
+          &nbsp;{likes.length} {likes.length === 1 ? 'Like' : 'Likes'}
+        </>
+      );
+    }
+
+    return (
+      <>
+        <ThumbUpAltOutlined fontSize="small" />
+        &nbsp;Like
+      </>
+    );
+  };
 
   return (
     <Card
@@ -78,7 +120,14 @@ const PostWidget = ({ post }) => {
       </CardContent>
       <CardActions disableSpacing>
         <IconButton aria-label="add to favorites">
-          <Favorite />
+          <Button
+            size="small"
+            color="primary"
+            disabled={!user}
+            onClick={handleLike}
+          >
+            <Likes />
+          </Button>
         </IconButton>
         <IconButton aria-label="share">
           <Share />

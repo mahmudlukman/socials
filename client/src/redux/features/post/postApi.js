@@ -18,16 +18,17 @@ export const postApi = apiSlice.injectEndpoints({
       }),
     }),
     getUserPosts: builder.query({
-      query: ({userId}) => ({
+      query: ({ userId }) => ({
         url: `get-user-posts/${userId}`,
         method: 'GET',
         credentials: 'include',
       }),
     }),
     updateLikes: builder.mutation({
-      query: () => ({
+      query: ({ postId }) => ({
         url: 'update-likes',
         method: 'PUT',
+        body: { postId },
         credentials: 'include',
       }),
     }),

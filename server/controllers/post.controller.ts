@@ -97,7 +97,7 @@ export const getAllUserPosts = catchAsyncError(
 export const updateLikes = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const postId = req.body.postId;
+      const { postId } = req.body;
       const userId = req.user.id;
 
       const post = await Post.findById(postId);
