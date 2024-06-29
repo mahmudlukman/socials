@@ -17,24 +17,70 @@ import {
   IconButton,
   useMediaQuery,
   Avatar,
+  TextField,
 } from '@mui/material';
 import FlexBetween from '../../components/FlexBetween';
-// import Dropzone from "react-dropzone";
+import { styled } from '@mui/material/styles';
 import UserImage from '../../components/UserImage';
 import WidgetWrapper from '../../components/WidgetWrapper';
-import { useState } from 'react';
+import {
+  useCreatePostMutation,
+  useGetPostsQuery,
+} from '../../redux/features/post/postApi';
 import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
 // import { setPosts } from "state";
 
 const MyPostWidget = ({ picturePath }) => {
   const dispatch = useDispatch();
   const { palette } = useTheme();
   const { user } = useSelector((state) => state.auth);
+  const [createPost, { isLoading, isSuccess, error }] = useCreatePostMutation();
+  const { refetch } = useGetPostsQuery();
+  const [postData, setPostData] = useState({
+    title: '',
+    image: null,
+  });
+  const [image, setImage] = useState(null);
   const isNonMobileScreens = useMediaQuery('(min-width: 1000px)');
   const mediumMain = palette.neutral.mediumMain;
   const medium = palette.neutral.medium;
 
-  const handlePost = async () => {};
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (reader.readyState === 2) {
+          setPostData({ ...postData, image: reader.result });
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const VisuallyHiddenInput = styled('input')({
+    clip: 'rect(0 0 0 0)',
+    clipPath: 'inset(50%)',
+    height: 1,
+    overflow: 'hidden',
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    whiteSpace: 'nowrap',
+    width: 1,
+  });
+
+  const clear = () => {
+    setPostData({ title: '', image: null });
+  };
+
+  const handlePost = async () => {
+    e.preventDefault();
+    await createPost({ ...postData });
+    clear();
+    refetch();
+  };
 
   return (
     <WidgetWrapper>
@@ -46,62 +92,41 @@ const MyPostWidget = ({ picturePath }) => {
         >
           {!user?.profilePicture?.url && user?.name?.charAt(0)}
         </Avatar>
-        <InputBase
+        <TextField
+          name="title"
+          value={postData.title}
+          variant="standard"
+          disableUnderline={false}
+          multiline
+          rows={4}
           placeholder="What's on your mind..."
-          // onChange={(e) => setPost(e.target.value)}
-          // value={post}
+          onChange={(e) => setPostData({ ...postData, title: e.target.value })}
+          InputProps={{
+            disableUnderline: true,
+          }}
           sx={{
             width: '100%',
             backgroundColor: palette.neutral.light,
             borderRadius: '2rem',
+            border: 'none',
             padding: '1rem 2rem',
           }}
         />
       </FlexBetween>
-      {/* {isImage && (
+      {postData.image && (
         <Box
           border={`1px solid ${medium}`}
           borderRadius="5px"
           mt="1rem"
           p="1rem"
         >
-          <Dropzone
-            acceptedFiles=".jpg,.jpeg,.png"
-            multiple={false}
-            onDrop={(acceptedFiles) => setImage(acceptedFiles[0])}
-          >
-            {({ getRootProps, getInputProps }) => (
-              <FlexBetween>
-                <Box
-                  {...getRootProps()}
-                  border={`2px dashed ${palette.primary.main}`}
-                  p="1rem"
-                  width="100%"
-                  sx={{ "&:hover": { cursor: "pointer" } }}
-                >
-                  <input {...getInputProps()} />
-                  {!image ? (
-                    <p>Add Image Here</p>
-                  ) : (
-                    <FlexBetween>
-                      <Typography>{image.name}</Typography>
-                      <EditOutlined />
-                    </FlexBetween>
-                  )}
-                </Box>
-                {image && (
-                  <IconButton
-                    onClick={() => setImage(null)}
-                    sx={{ width: "15%" }}
-                  >
-                    <DeleteOutlined />
-                  </IconButton>
-                )}
-              </FlexBetween>
-            )}
-          </Dropzone>
+          <img
+            src={postData.image}
+            alt=""
+            style={{ width: '100%', objectFit: 'cover' }}
+          />
         </Box>
-      )} */}
+      )}
 
       <Divider sx={{ margin: '1.25rem 0' }} />
 
@@ -151,6 +176,11 @@ const MyPostWidget = ({ picturePath }) => {
           POST
         </Button>
       </FlexBetween>
+      <VisuallyHiddenInput
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+      />
     </WidgetWrapper>
   );
 };
