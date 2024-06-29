@@ -6,6 +6,7 @@ import {
   ImageOutlined,
   MicOutlined,
   MoreHorizOutlined,
+  CloudUpload,
 } from '@mui/icons-material';
 import {
   Box,
@@ -18,18 +19,18 @@ import {
   useMediaQuery,
   Avatar,
   TextField,
+  ButtonBase,
+  CircularProgress,
 } from '@mui/material';
 import FlexBetween from '../../components/FlexBetween';
 import { styled } from '@mui/material/styles';
-import UserImage from '../../components/UserImage';
 import WidgetWrapper from '../../components/WidgetWrapper';
 import {
   useCreatePostMutation,
   useGetPostsQuery,
 } from '../../redux/features/post/postApi';
 import { useDispatch, useSelector } from 'react-redux';
-import { useState } from 'react';
-// import { setPosts } from "state";
+import { useState, useRef } from 'react';
 
 const MyPostWidget = ({ picturePath }) => {
   const dispatch = useDispatch();
@@ -75,7 +76,7 @@ const MyPostWidget = ({ picturePath }) => {
     setPostData({ title: '', image: null });
   };
 
-  const handlePost = async () => {
+  const handlePost = async (e) => {
     e.preventDefault();
     await createPost({ ...postData });
     clear();
@@ -84,103 +85,134 @@ const MyPostWidget = ({ picturePath }) => {
 
   return (
     <WidgetWrapper>
-      <FlexBetween gap="1.5rem">
-        <Avatar
-          sx={{ bgcolor: 'grey' }}
-          aria-label="avatar"
-          src={user?.profilePicture?.url || ''}
-        >
-          {!user?.profilePicture?.url && user?.name?.charAt(0)}
-        </Avatar>
-        <TextField
-          name="title"
-          value={postData.title}
-          variant="standard"
-          disableUnderline={false}
-          multiline
-          rows={4}
-          placeholder="What's on your mind..."
-          onChange={(e) => setPostData({ ...postData, title: e.target.value })}
-          InputProps={{
-            disableUnderline: true,
-          }}
-          sx={{
-            width: '100%',
-            backgroundColor: palette.neutral.light,
-            borderRadius: '2rem',
-            border: 'none',
-            padding: '1rem 2rem',
-          }}
-        />
-      </FlexBetween>
-      {postData.image && (
-        <Box
-          border={`1px solid ${medium}`}
-          borderRadius="5px"
-          mt="1rem"
-          p="1rem"
-        >
-          <img
-            src={postData.image}
-            alt=""
-            style={{ width: '100%', objectFit: 'cover' }}
-          />
-        </Box>
-      )}
-
-      <Divider sx={{ margin: '1.25rem 0' }} />
-
-      <FlexBetween>
-        <FlexBetween gap="0.25rem" onClick={() => {}}>
-          <ImageOutlined sx={{ color: mediumMain }} />
-          <Typography
-            color={mediumMain}
-            sx={{ '&:hover': { cursor: 'pointer', color: medium } }}
+      <form autoComplete="off" onSubmit={handlePost}>
+        <FlexBetween gap="1.5rem">
+          <Avatar
+            sx={{ bgcolor: 'grey' }}
+            aria-label="avatar"
+            src={user?.profilePicture?.url || ''}
           >
-            Image
-          </Typography>
+            {!user?.profilePicture?.url && user?.name?.charAt(0)}
+          </Avatar>
+          <TextField
+            name="title"
+            value={postData.title}
+            variant="standard"
+            disableUnderline={false}
+            multiline
+            rows={4}
+            placeholder="What's on your mind..."
+            onChange={(e) => setPostData({ ...postData, title: e.target.value })}
+            InputProps={{
+              disableUnderline: true,
+            }}
+            sx={{
+              width: '100%',
+              backgroundColor: palette.neutral.light,
+              borderRadius: '2rem',
+              border: 'none',
+              padding: '1rem 2rem',
+            }}
+          />
         </FlexBetween>
-
-        {isNonMobileScreens ? (
-          <>
-            <FlexBetween gap="0.25rem">
-              <GifBoxOutlined sx={{ color: mediumMain }} />
-              <Typography color={mediumMain}>Clip</Typography>
-            </FlexBetween>
-
-            <FlexBetween gap="0.25rem">
-              <AttachFileOutlined sx={{ color: mediumMain }} />
-              <Typography color={mediumMain}>Attachment</Typography>
-            </FlexBetween>
-
-            <FlexBetween gap="0.25rem">
-              <MicOutlined sx={{ color: mediumMain }} />
-              <Typography color={mediumMain}>Audio</Typography>
-            </FlexBetween>
-          </>
-        ) : (
-          <FlexBetween gap="0.25rem">
-            <MoreHorizOutlined sx={{ color: mediumMain }} />
-          </FlexBetween>
+        {postData.image && (
+          <Box
+            border={`1px solid ${medium}`}
+            borderRadius="5px"
+            mt="1rem"
+            p="1rem"
+            position="relative"
+          >
+            <img
+              src={postData.image}
+              alt=""
+              style={{ width: '100%', objectFit: 'cover' }}
+            />
+            <IconButton
+              aria-label="delete"
+              size="small"
+              onClick={() => setPostData({ ...postData, image: null })}
+              sx={{
+                position: 'absolute',
+                top: 8,
+                right: 8,
+                bgcolor: palette.background.alt,
+                '&:hover': {
+                  bgcolor: palette.background.alt,
+                },
+              }}
+            >
+              <DeleteOutlined sx={{ color: palette.primary.main }} />
+            </IconButton>
+          </Box>
         )}
 
-        <Button
-          // disabled={!post}
-          // onClick={handlePost}
-          sx={{
-            color: palette.background.alt,
-            backgroundColor: palette.primary.main,
-            borderRadius: '3rem',
-          }}
-        >
-          POST
-        </Button>
-      </FlexBetween>
-      <VisuallyHiddenInput
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-      />
+        <Divider sx={{ margin: '1.25rem 0' }} />
+
+        <FlexBetween>
+          <FlexBetween gap="0.25rem" onClick={() => {}}>
+            <ButtonBase
+              component="label"
+              role={undefined}
+              variant="contained"
+              tabIndex={-1}
+              sx={{ bgcolor: 'transparent' }}
+            >
+              <ImageOutlined sx={{ color: mediumMain }} />
+              <Typography
+                color={mediumMain}
+                sx={{ '&:hover': { cursor: 'pointer', color: medium } }}
+              >
+                Image
+              </Typography>
+              <VisuallyHiddenInput
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </ButtonBase>
+          </FlexBetween>
+
+          {isNonMobileScreens ? (
+            <>
+              <FlexBetween gap="0.25rem">
+                <GifBoxOutlined sx={{ color: mediumMain }} />
+                <Typography color={mediumMain}>Clip</Typography>
+              </FlexBetween>
+
+              <FlexBetween gap="0.25rem">
+                <AttachFileOutlined sx={{ color: mediumMain }} />
+                <Typography color={mediumMain}>Attachment</Typography>
+              </FlexBetween>
+
+              <FlexBetween gap="0.25rem">
+                <MicOutlined sx={{ color: mediumMain }} />
+                <Typography color={mediumMain}>Audio</Typography>
+              </FlexBetween>
+            </>
+          ) : (
+            <FlexBetween gap="0.25rem">
+              <MoreHorizOutlined sx={{ color: mediumMain }} />
+            </FlexBetween>
+          )}
+
+          <Button
+            disabled={!postData}
+            type="submit"
+            sx={{
+              color: palette.background.alt,
+              backgroundColor: palette.primary.main,
+              borderRadius: '3rem',
+            }}
+          >
+            {isLoading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'POST'
+            )}
+          </Button>
+        </FlexBetween>
+      </form>
     </WidgetWrapper>
   );
 };
