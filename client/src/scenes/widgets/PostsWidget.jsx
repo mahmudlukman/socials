@@ -1,6 +1,6 @@
 import { useGetPostsQuery } from '../../redux/features/post/postApi';
 import PostWidget from './PostWidget';
-import { CircularProgress, Box } from '@mui/material';
+import { CircularProgress, Box, Typography } from '@mui/material';
 
 const PostsWidget = ({ user, isProfile = false }) => {
   const { data: postData, isLoading } = useGetPostsQuery();

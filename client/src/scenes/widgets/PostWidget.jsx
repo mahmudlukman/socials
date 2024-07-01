@@ -36,18 +36,34 @@ const PostWidget = ({ post }) => {
   const { palette } = useTheme();
   const { user } = useSelector((state) => state.auth);
   const [likes, setLikes] = useState(post?.likes || []);
-  const [updateLikes] = useUpdateLikesMutation();
+  const [updateLikes] = useUpdateLikesMutation(
+    {},
+    { refetchOnMountOrArgChange: true }
+  );
   const main = palette.neutral.main;
   const primary = palette.primary.main;
 
   const hasLikedPost = likes.some((like) => like.userId === user._id);
 
   const handleLike = async () => {
+    // Optimistic UI update
+    const updatedLikes = hasLikedPost
+      ? likes.filter((like) => like.userId !== user._id)
+      : [...likes, { userId: user._id, userName: user.userName }];
+
+    setLikes(updatedLikes);
+
     try {
       const response = await updateLikes({ postId: post._id }).unwrap();
-      setLikes(response.likes || []); // Ensure likes is always an array
+      setLikes(response.likes || []);
     } catch (error) {
-      console.error("Error updating likes: ", error);
+      // Rollback the optimistic UI update on error
+      setLikes(
+        hasLikedPost
+          ? [...likes, { userId: user._id, userName: user.userName }]
+          : likes.filter((like) => like.userId !== user._id)
+      );
+      console.error('Error updating likes: ', error);
     }
   };
 
@@ -91,9 +107,9 @@ const PostWidget = ({ post }) => {
           <Avatar
             sx={{ bgcolor: 'grey' }}
             aria-label="avatar"
-            src={user?.profilePicture?.url || ''}
+            src={post?.user?.profilePicture?.url || ''}
           >
-            {!user?.profilePicture?.url && user?.name?.charAt(0)}
+            {!post?.user?.profilePicture?.url && post?.user?.name?.charAt(0)}
           </Avatar>
         }
         action={
@@ -101,7 +117,7 @@ const PostWidget = ({ post }) => {
             <MoreVert />
           </IconButton>
         }
-        title={`@${user.userName}`}
+        title={`@${post?.user?.userName}`}
         subheader={moment(post.createdAt).fromNow()}
       />
       <CardContent>

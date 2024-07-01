@@ -47,7 +47,7 @@ export const createPost = catchAsyncError(
               url: myCloud?.secure_url,
             }
           : null,
-        user,
+        user: req.user,
         replies: processedReplies,
       });
 
