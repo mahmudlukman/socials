@@ -197,7 +197,7 @@ const MyPostWidget = ({ picturePath }) => {
           )}
 
           <Button
-            disabled={!postData.title}
+            disabled={!postData.title && !postData.image}
             type="submit"
             sx={{
               color: palette.background.alt,

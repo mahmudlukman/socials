@@ -36,10 +36,7 @@ const PostWidget = ({ post }) => {
   const { palette } = useTheme();
   const { user } = useSelector((state) => state.auth);
   const [likes, setLikes] = useState(post?.likes || []);
-  const [updateLikes] = useUpdateLikesMutation(
-    {},
-    { refetchOnMountOrArgChange: true }
-  );
+  const [updateLikes] = useUpdateLikesMutation();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
 
