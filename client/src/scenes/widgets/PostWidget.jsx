@@ -37,6 +37,7 @@ const PostWidget = ({ post }) => {
   const { user } = useSelector((state) => state.auth);
   const [likes, setLikes] = useState(post?.likes || []);
   const [updateLikes] = useUpdateLikesMutation();
+  const { refetch } = useGetPostsQuery();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
 
@@ -44,15 +45,21 @@ const PostWidget = ({ post }) => {
 
   const handleLike = async () => {
     // Optimistic UI update
-    const updatedLikes = hasLikedPost
-      ? likes.filter((like) => like.userId !== user._id)
-      : [...likes, { userId: user._id, userName: user.userName }];
+    // const updatedLikes = hasLikedPost
+    //   ? likes.filter((like) => like.userId !== user._id)
+    //   : [...likes, { userId: user._id, userName: user.userName }];
 
-    setLikes(updatedLikes);
+    // setLikes(updatedLikes);
 
     try {
-      const response = await updateLikes({ postId: post._id }).unwrap();
-      setLikes(response.likes || []);
+      // const response = await updateLikes({ postId: post._id }).unwrap();
+      // setLikes(response.likes || []);
+      await updateLikes({ postId: post._id })
+      const updatedLikes = hasLikedPost
+        ? likes.filter((like) => like.userId !== user._id)
+        : [...likes, { userId: user._id, userName: user.userName }];
+  
+      setLikes(updatedLikes);
     } catch (error) {
       // Rollback the optimistic UI update on error
       setLikes(
@@ -85,7 +92,7 @@ const PostWidget = ({ post }) => {
     return (
       <>
         <ThumbUpAltOutlined fontSize="small" />
-        &nbsp;Like
+        &nbsp;
       </>
     );
   };

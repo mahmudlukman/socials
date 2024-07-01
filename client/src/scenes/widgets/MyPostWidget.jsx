@@ -101,7 +101,7 @@ const MyPostWidget = ({ picturePath }) => {
             disableUnderline={false}
             multiline
             rows={4}
-            placeholder="What's on your mind..."
+            placeholder={`What's on your mind ${user.name}...`}
             onChange={(e) => setPostData({ ...postData, title: e.target.value })}
             InputProps={{
               disableUnderline: true,
