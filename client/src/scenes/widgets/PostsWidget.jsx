@@ -17,7 +17,7 @@ const PostsWidget = ({ user, isProfile = false }) => {
   const posts = isProfile ? userPostData?.posts : postData?.posts;
 
   if (!posts || posts.length === 0) {
-    return <Typography>No Posts</Typography>;
+    return <Typography sx={{m: "10px"}}>No Posts</Typography>;
   }
 
   return (
