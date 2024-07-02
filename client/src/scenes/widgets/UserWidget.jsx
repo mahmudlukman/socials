@@ -9,7 +9,6 @@ import UserImage from '../../components/UserImage';
 import FlexBetween from '../../components/FlexBetween';
 import WidgetWrapper from '../../components/WidgetWrapper';
 import { useSelector } from 'react-redux';
-import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import LinkedIn from '../../assets/linkedin.png';
 import Twitter from '../../assets/twitter.png';
@@ -22,13 +21,15 @@ const UserWidget = ({ userId, picturePath }) => {
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;
 
+  const iconColor = palette.mode === 'dark' ? dark : palette.text.primary;
+
   return (
     <WidgetWrapper>
       {/* FIRST ROW */}
       <FlexBetween
         gap="0.5rem"
         pb="1.1rem"
-        // onClick={() => navigate(`/profile/${userId}`)}
+        onClick={() => navigate(`/profile/${user._id}`)}
       >
         <FlexBetween gap="1rem">
           <Avatar
@@ -61,7 +62,7 @@ const UserWidget = ({ userId, picturePath }) => {
             </Typography>
           </Box>
         </FlexBetween>
-        <ManageAccountsOutlined />
+        <ManageAccountsOutlined sx={{ color: iconColor }} />
       </FlexBetween>
 
       <Divider />
@@ -72,11 +73,11 @@ const UserWidget = ({ userId, picturePath }) => {
           <Typography color={medium}>{user.bio}</Typography>
         </Box>
         <Box display="flex" alignItems="center" gap="1rem" mb="0.5rem">
-          <LocationOnOutlined fontSize="large" />
+          <LocationOnOutlined fontSize="large" sx={{ color: iconColor }} />
           <Typography color={medium}>{user.location}</Typography>
         </Box>
         <Box display="flex" alignItems="center" gap="1rem">
-          <WorkOutlineOutlined fontSize="large" />
+          <WorkOutlineOutlined fontSize="large" sx={{ color: iconColor }} />
           <Typography color={medium}>{user.occupation}</Typography>
         </Box>
       </Box>
@@ -117,7 +118,7 @@ const UserWidget = ({ userId, picturePath }) => {
               <Typography color={main}>Social Network</Typography>
             </Box>
           </FlexBetween>
-          <EditOutlined sx={{ color: main }} />
+          <EditOutlined sx={{ color: iconColor }} />
         </FlexBetween>
 
         <FlexBetween gap="1rem">
@@ -130,7 +131,7 @@ const UserWidget = ({ userId, picturePath }) => {
               <Typography color={main}>Network Platform</Typography>
             </Box>
           </FlexBetween>
-          <EditOutlined color={main} />
+          <EditOutlined sx={{ color: iconColor }} />
         </FlexBetween>
       </Box>
     </WidgetWrapper>

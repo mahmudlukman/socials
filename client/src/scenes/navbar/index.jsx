@@ -41,6 +41,8 @@ const Navbar = () => {
   const primaryLight = theme.palette.primary.light;
   const alt = theme.palette.background.alt;
 
+  const iconColor = theme.palette.mode === 'dark' ? dark : theme.palette.text.primary;
+
   const { refetch } = useLogoutQuery(undefined, {
     skip: !logout,
     refetchOnMountOrArgChange: true,
@@ -76,7 +78,7 @@ const Navbar = () => {
           >
             <InputBase placeholder="Search..." />
             <IconButton>
-              <Search />
+              <Search sx={{ color: iconColor }} />
             </IconButton>
           </FlexBetween>
         )}
@@ -86,14 +88,14 @@ const Navbar = () => {
         <FlexBetween gap="2rem">
           <IconButton onClick={toggleTheme}>
             {theme.palette.mode === 'dark' ? (
-              <LightMode sx={{ fontSize: '25px', color: dark }} />
+              <LightMode sx={{ fontSize: '25px', color: iconColor }} />
             ) : (
-              <DarkMode sx={{ fontSize: '25px' }} />
+              <DarkMode sx={{ fontSize: '25px', color: iconColor }} />
             )}
           </IconButton>
-          <Message sx={{ fontSize: '25px', cursor: 'pointer' }} />
-          <Notifications sx={{ fontSize: '25px', cursor: 'pointer' }} />
-          <Help sx={{ fontSize: '25px', cursor: 'pointer' }} />
+          <Message sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }} />
+          <Notifications sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }} />
+          <Help sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }} />
           <FormControl variant="standard" value={`@${user.userName}`}>
             <Select
               value={`@${user.userName}`}
@@ -123,7 +125,7 @@ const Navbar = () => {
         <IconButton
           onClick={() => setIsMobileMenuToggled(!isMobileMenuToggled)}
         >
-          <Menu />
+          <Menu sx={{ color: iconColor }} />
         </IconButton>
       )}
 
@@ -142,7 +144,7 @@ const Navbar = () => {
             <IconButton
               onClick={() => setIsMobileMenuToggled(!isMobileMenuToggled)}
             >
-              <Close />
+              <Close sx={{ color: iconColor }} />
             </IconButton>
           </Box>
 
@@ -155,14 +157,14 @@ const Navbar = () => {
           >
             <IconButton sx={{ fontSize: '25px' }} onClick={toggleTheme}>
               {theme.palette.mode === 'dark' ? (
-                <LightMode sx={{ fontSize: '25px', color: dark }} />
+                <LightMode sx={{ fontSize: '25px', color: iconColor }} />
               ) : (
-                <DarkMode sx={{ fontSize: '25px' }} />
+                <DarkMode sx={{ fontSize: '25px', color: iconColor }} />
               )}
             </IconButton>
-            <Message sx={{ fontSize: '25px', cursor: 'pointer' }} />
-            <Notifications sx={{ fontSize: '25px', cursor: 'pointer' }} />
-            <Help sx={{ fontSize: '25px', cursor: 'pointer' }} />
+            <Message sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }} />
+            <Notifications sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }} />
+            <Help sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }} />
             <FormControl variant="standard" value={`@${user.userName}`}>
               <Select
                 value={`@${user.userName}`}
