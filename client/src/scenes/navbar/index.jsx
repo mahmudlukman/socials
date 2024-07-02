@@ -29,11 +29,9 @@ import { useThemeContext } from '../../themeProvider';
 const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const [logout, setLogout] = useState(false);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user } = useSelector((state) => state.auth);
   const isNonMobileScreens = useMediaQuery('(min-width: 1000px)');
-  // const { darkMode, toggleTheme } = useThemeContext();
   const { toggleTheme } = useThemeContext();
   const theme = useTheme();
 

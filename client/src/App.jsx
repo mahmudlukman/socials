@@ -7,8 +7,9 @@ import AuthPage from './scenes/authPage';
 import HomePage from './scenes/homePage';
 import ResetPassword from './scenes/authPage/ResetPassword';
 import ActivationPage from './scenes/authPage/Activation';
-import { ThemeProvider } from './themeProvider'; // Import the ThemeProvider
-import Navbar from './scenes/navbar'; // Adjust the import path as necessary
+import ProfilePage from './scenes/profilePage/index';
+import { ThemeProvider } from './themeProvider';
+import Navbar from './scenes/navbar';
 
 const App = () => {
   const { user } = useSelector((state) => state.auth);
@@ -35,6 +36,10 @@ const App = () => {
               element={
                 !user ? <AuthPage /> : <Navigate to="/home" replace={true} />
               }
+            />
+            <Route
+              path="/profile/:userId"
+              element={!user ? <AuthPage /> : <ProfilePage replace={true} />}
             />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/activate-user" element={<ActivationPage />} />
