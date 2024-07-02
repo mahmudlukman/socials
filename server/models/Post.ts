@@ -29,6 +29,7 @@ interface IPost extends Document {
   title: string;
   image?: IImage;
   user: IUser;
+  creator: object;
   likes: ILike[];
   replies: IReply[];
 }

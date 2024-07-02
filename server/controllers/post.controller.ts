@@ -82,7 +82,7 @@ export const getAllUserPosts = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?._id;
-      const posts = await Post.find({ userId }).sort({
+      const posts = await Post.find({ 'user._id': userId }).sort({
         createdAt: -1,
       });
 
