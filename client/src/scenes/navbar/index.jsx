@@ -26,11 +26,11 @@ import { useNavigate } from 'react-router-dom';
 import FlexBetween from '../../components/FlexBetween';
 import { useThemeContext } from '../../themeProvider';
 
-const Navbar = ({user}) => {
+const Navbar = () => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const [logout, setLogout] = useState(false);
   const navigate = useNavigate();
-  // const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const isNonMobileScreens = useMediaQuery('(min-width: 1000px)');
   const { toggleTheme } = useThemeContext();
   const theme = useTheme();
@@ -124,7 +124,7 @@ const Navbar = ({user}) => {
               <MenuItem value={`@${user.userName}`}>
                 <Typography>{`@${user.userName}`}</Typography>
               </MenuItem>
-              <MenuItem onClick={handleLogout}>Settings</MenuItem>
+              <MenuItem onClick={() => navigate('/settings')}>Settings</MenuItem>
               <MenuItem onClick={handleLogout}>Log Out</MenuItem>
             </Select>
           </FormControl>

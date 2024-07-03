@@ -1,4 +1,4 @@
-import { Box, CircularProgress, useMediaQuery } from "@mui/material";
+import { Box, useMediaQuery } from "@mui/material";
 import { useParams } from "react-router-dom";
 import Navbar from "../../scenes/navbar";
 // import FriendListWidget from "../../scenes/widgets/FriendListWidget";

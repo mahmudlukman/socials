@@ -43,7 +43,7 @@ const App = () => {
               element={!user ? <AuthPage /> : <ProfilePage replace={true} />}
             />
             <Route
-              path="/settings/:userId"
+              path="/settings"
               element={!user ? <AuthPage /> : <SettingsPage replace={true} />}
             />
             <Route path="/reset-password" element={<ResetPassword />} />

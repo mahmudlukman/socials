@@ -21,9 +21,9 @@ import moment from 'moment';
 import { Link, useNavigate } from 'react-router-dom';
 import { MoreVert, ThumbUpAlt, ThumbUpAltOutlined, Share } from '@mui/icons-material';
 
-const PostWidget = ({ post, user }) => {
+const PostWidget = ({ post }) => {
   const { palette } = useTheme();
-  // const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const [likes, setLikes] = useState(post?.likes || []);
   const [updateLikes] = useUpdateLikesMutation();
   const navigate = useNavigate();
