@@ -100,7 +100,8 @@ const ProfileCard = ({ onSave }) => {
           sx={{ width: 120, height: 120, border: `4px solid ${theme.palette.background.paper}` }}
         />
         {isEditing && (
-          <Box position="absolute" bottom={-10} right={-10}>
+          <Box position="relative">
+            <Box position='absolute' top={50} right={-13}>
             <input
               accept="image/*"
               style={{ display: 'none' }}
@@ -114,6 +115,7 @@ const ProfileCard = ({ onSave }) => {
                 <Edit />
               </IconButton>
             </label>
+            </Box>
           </Box>
         )}
       </Box>
