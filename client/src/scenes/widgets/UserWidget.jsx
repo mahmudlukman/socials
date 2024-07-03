@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import LinkedIn from '../../assets/linkedin.png';
 import Twitter from '../../assets/twitter.png';
 
-const UserWidget = ({user}) => {
+const UserWidget = ({ user }) => {
   const { palette } = useTheme();
   const navigate = useNavigate();
   // const { user } = useSelector((state) => state.auth);
@@ -62,7 +62,11 @@ const UserWidget = ({user}) => {
             </Typography>
           </Box>
         </FlexBetween>
-        <ManageAccountsOutlined sx={{ color: iconColor }} />
+
+        <ManageAccountsOutlined
+          sx={{ color: iconColor, cursor: 'pointer' }}
+          onClick={() => navigate(`/settings/${user._id}`)}
+        />
       </FlexBetween>
 
       <Divider />

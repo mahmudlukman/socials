@@ -10,6 +10,7 @@ import ActivationPage from './scenes/authPage/Activation';
 import ProfilePage from './scenes/profilePage/index';
 import { ThemeProvider } from './themeProvider';
 import Navbar from './scenes/navbar';
+import SettingsPage from './scenes/settings';
 
 const App = () => {
   const { user } = useSelector((state) => state.auth);
@@ -40,6 +41,10 @@ const App = () => {
             <Route
               path="/profile/:userId"
               element={!user ? <AuthPage /> : <ProfilePage replace={true} />}
+            />
+            <Route
+              path="/settings/:userId"
+              element={!user ? <AuthPage /> : <SettingsPage replace={true} />}
             />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/activate-user" element={<ActivationPage />} />

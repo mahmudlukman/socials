@@ -124,6 +124,7 @@ const Navbar = ({user}) => {
               <MenuItem value={`@${user.userName}`}>
                 <Typography>{`@${user.userName}`}</Typography>
               </MenuItem>
+              <MenuItem onClick={handleLogout}>Settings</MenuItem>
               <MenuItem onClick={handleLogout}>Log Out</MenuItem>
             </Select>
           </FormControl>

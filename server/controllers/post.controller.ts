@@ -92,6 +92,20 @@ export const getAllUserPosts = catchAsyncError(
     }
   }
 );
+// export const getAllUserPosts = catchAsyncError(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const { id } = req.params;
+//       const posts = await Post.find({id}).sort({
+//         createdAt: -1,
+//       });
+
+//       res.status(200).json({ success: true, posts });
+//     } catch (error: any) {
+//       return next(new ErrorHandler(error.message, 400));
+//     }
+//   }
+// );
 
 // add or remove likes
 export const updateLikes = catchAsyncError(
