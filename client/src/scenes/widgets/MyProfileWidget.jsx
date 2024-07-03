@@ -19,8 +19,10 @@ const ProfileCard = ({ onSave }) => {
   const { user } = useSelector((state) => state.auth);
   const [isEditing, setIsEditing] = useState(false);
   const [formValues, setFormValues] = useState({
+    name: user.name,
     userName: user.userName,
-    email: user.email,
+    location: user.location,
+    occupation: user.occupation,
     bio: user.bio,
     profileImage: user.profileImage,
     coverImage: user.coverImage,
@@ -43,8 +45,10 @@ const ProfileCard = ({ onSave }) => {
   const handleCancel = () => {
     setIsEditing(false);
     setFormValues({
+      name: user.name,
       userName: user.userName,
-      email: user.email,
+      location: user.location,
+      occupation: user.occupation,
       bio: user.bio,
       profileImage: user.profileImage,
       coverImage: user.coverImage,
@@ -119,6 +123,14 @@ const ProfileCard = ({ onSave }) => {
             <TextField
               fullWidth
               margin="normal"
+              label="Name"
+              name="name"
+              value={formValues.name}
+              onChange={handleInputChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
               label="Username"
               name="userName"
               value={formValues.userName}
@@ -127,9 +139,17 @@ const ProfileCard = ({ onSave }) => {
             <TextField
               fullWidth
               margin="normal"
-              label="Email"
-              name="email"
-              value={formValues.email}
+              label="Location"
+              name="location"
+              value={formValues.location}
+              onChange={handleInputChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Occupation"
+              name="occupation"
+              value={formValues.occupation}
               onChange={handleInputChange}
             />
             <TextField

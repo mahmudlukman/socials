@@ -15,7 +15,7 @@ const postRouter = express.Router();
 
 postRouter.post('/create', isAuthenticated, createPost);
 postRouter.get('/get-posts', isAuthenticated, getAllPosts);
-postRouter.get('/get-user-posts', isAuthenticated, getAllUserPosts);
+postRouter.get('/get-user-posts/:id', isAuthenticated, getAllUserPosts);
 postRouter.put('/update-likes', isAuthenticated, updateLikes);
 postRouter.put('/add-replies', isAuthenticated, addReplies);
 postRouter.put('/add-reply', isAuthenticated, addReply);
