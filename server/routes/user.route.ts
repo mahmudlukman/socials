@@ -3,6 +3,7 @@ import {
   deleteUser,
   followUnfollowUser,
   getAllUsers,
+  getUser,
   // getNotification,
   // getUserFriends,
   getUserInfo,
@@ -17,6 +18,7 @@ import { getNotifications } from '../controllers/notification.controller';
 const userRouter = express.Router();
 
 userRouter.get('/me', isAuthenticated, getUserInfo);
+userRouter.get('/get-user/:id', isAuthenticated, getUser);
 userRouter.put('/update-user', isAuthenticated, updateUserInfo);
 userRouter.put(
   '/update-profile-picture',

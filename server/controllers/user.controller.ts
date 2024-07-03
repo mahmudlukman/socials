@@ -19,6 +19,19 @@ export const getUserInfo = catchAsyncError(
   }
 );
 
+// get user info
+export const getUser = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id } = req.params;
+      const user = await UserModel.findById(id).select('-password');
+      res.status(200).json({ success: true, user });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
 // update user info
 interface IUpdateUserInfo {
   name?: string;

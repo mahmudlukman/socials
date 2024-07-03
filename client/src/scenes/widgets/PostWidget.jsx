@@ -24,13 +24,14 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   useUpdateLikesMutation,
   useGetPostsQuery,
 } from '../../redux/features/post/postApi';
 import moment from 'moment';
+import { Link, useNavigate } from 'react-router-dom';
 
 const PostWidget = ({ post }) => {
   const { palette } = useTheme();
@@ -38,27 +39,20 @@ const PostWidget = ({ post }) => {
   const [likes, setLikes] = useState(post?.likes || []);
   const [updateLikes] = useUpdateLikesMutation();
   const { refetch } = useGetPostsQuery();
+  const navigate = useNavigate();
   const main = palette.neutral.main;
   const primary = palette.primary.main;
 
   const hasLikedPost = likes.some((like) => like.userId === user._id);
 
   const handleLike = async () => {
-    // Optimistic UI update
-    // const updatedLikes = hasLikedPost
-    //   ? likes.filter((like) => like.userId !== user._id)
-    //   : [...likes, { userId: user._id, userName: user.userName }];
-
-    // setLikes(updatedLikes);
-
     try {
-      // const response = await updateLikes({ postId: post._id }).unwrap();
-      // setLikes(response.likes || []);
-      await updateLikes({ postId: post._id })
+      // Optimistic UI update
+      await updateLikes({ postId: post._id });
       const updatedLikes = hasLikedPost
         ? likes.filter((like) => like.userId !== user._id)
         : [...likes, { userId: user._id, userName: user.userName }];
-  
+
       setLikes(updatedLikes);
     } catch (error) {
       // Rollback the optimistic UI update on error
@@ -106,24 +100,26 @@ const PostWidget = ({ post }) => {
         m: '2rem 0',
       }}
     >
-      <CardHeader
-        avatar={
-          <Avatar
-            sx={{ bgcolor: 'grey' }}
-            aria-label="avatar"
-            src={post?.user?.profilePicture?.url || ''}
-          >
-            {!post?.user?.profilePicture?.url && post?.user?.name?.charAt(0)}
-          </Avatar>
-        }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVert />
-          </IconButton>
-        }
-        title={`@${post?.user?.userName}`}
-        subheader={moment(post.createdAt).fromNow()}
-      />
+      <Link to={`/profile/${post?.user._id}`} style={{textDecoration: 'non',}}>
+        <CardHeader
+          avatar={
+            <Avatar
+              sx={{ bgcolor: 'grey' }}
+              aria-label="avatar"
+              src={post?.user?.profilePicture?.url || ''}
+            >
+              {!post?.user?.profilePicture?.url && post?.user?.name?.charAt(0)}
+            </Avatar>
+          }
+          action={
+            <IconButton aria-label="settings">
+              <MoreVert />
+            </IconButton>
+          }
+          title={`${post?.user?.name} @${post?.user?.userName}`}
+          subheader={moment(post.createdAt).fromNow()}
+        />
+      </Link>
       <CardContent>
         <Typography variant="body2" color="text.secondary">
           {post.title}
