@@ -1,4 +1,4 @@
-import { Box, useMediaQuery } from "@mui/material";
+import { Box, CircularProgress, useMediaQuery } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -7,14 +7,19 @@ import Navbar from "../../scenes/navbar";
 import MyPostWidget from "../../scenes/widgets/MyPostWidget";
 import PostsWidget from "../../scenes/widgets/PostsWidget";
 import UserWidget from "../../scenes/widgets/UserWidget";
+import { useGetUserQuery } from "../../redux/features/user/userApi";
 
 const ProfilePage = () => {
-  const { user } = useSelector((state) => state.auth);
   const { userId } = useParams();
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
+  const { data: user, isLoading } = useGetUserQuery({userId});
+
+  if (isLoading) {
+    return <CircularProgress/>;
+  }
 
   return (
-    <Box sx={{color: 'white'}}>
+    <Box sx={{ color: 'white' }}>
       <Navbar />
       <Box
         width="100%"
@@ -24,7 +29,7 @@ const ProfilePage = () => {
         justifyContent="center"
       >
         <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
-          <UserWidget userId={userId} picturePath={user.picturePath} />
+          <UserWidget user={user} />
           <Box m="2rem 0" />
           {/* <FriendListWidget userId={userId} /> */}
         </Box>
@@ -32,7 +37,7 @@ const ProfilePage = () => {
           flexBasis={isNonMobileScreens ? "42%" : undefined}
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
-          <MyPostWidget picturePath={user.picturePath} />
+          <MyPostWidget user={user} />
           <Box m="2rem 0" />
           <PostsWidget userId={userId} isProfile />
         </Box>

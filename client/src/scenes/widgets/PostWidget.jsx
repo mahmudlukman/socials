@@ -1,16 +1,4 @@
 import {
-  ChatBubbleOutlineOutlined,
-  ExpandMore,
-  Favorite,
-  FavoriteBorderOutlined,
-  FavoriteOutlined,
-  MoreVert,
-  Share,
-  ShareOutlined,
-  ThumbUpAlt,
-  ThumbUpAltOutlined,
-} from '@mui/icons-material';
-import {
   Avatar,
   Box,
   Button,
@@ -19,7 +7,6 @@ import {
   CardContent,
   CardHeader,
   CardMedia,
-  Divider,
   IconButton,
   Typography,
   useTheme,
@@ -32,16 +19,15 @@ import {
 } from '../../redux/features/post/postApi';
 import moment from 'moment';
 import { Link, useNavigate } from 'react-router-dom';
+import { MoreVert, ThumbUpAlt, ThumbUpAltOutlined, Share } from '@mui/icons-material';
 
-const PostWidget = ({ post }) => {
+const PostWidget = ({ post, user }) => {
   const { palette } = useTheme();
-  const { user } = useSelector((state) => state.auth);
+  // const { user } = useSelector((state) => state.auth);
   const [likes, setLikes] = useState(post?.likes || []);
   const [updateLikes] = useUpdateLikesMutation();
-  const { refetch } = useGetPostsQuery();
   const navigate = useNavigate();
   const main = palette.neutral.main;
-  const primary = palette.primary.main;
 
   const hasLikedPost = likes.some((like) => like.userId === user._id);
 
@@ -100,7 +86,7 @@ const PostWidget = ({ post }) => {
         m: '2rem 0',
       }}
     >
-      <Link to={`/profile/${post?.user._id}`} style={{textDecoration: 'non',}}>
+      <Box onClick={() => navigate(`/profile/${post?.user._id}`)} sx={{ cursor: 'pointer' }}>
         <CardHeader
           avatar={
             <Avatar
@@ -119,7 +105,7 @@ const PostWidget = ({ post }) => {
           title={`${post?.user?.name} @${post?.user?.userName}`}
           subheader={moment(post.createdAt).fromNow()}
         />
-      </Link>
+      </Box>
       <CardContent>
         <Typography variant="body2" color="text.secondary">
           {post.title}

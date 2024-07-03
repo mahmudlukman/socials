@@ -26,11 +26,11 @@ import { useNavigate } from 'react-router-dom';
 import FlexBetween from '../../components/FlexBetween';
 import { useThemeContext } from '../../themeProvider';
 
-const Navbar = () => {
+const Navbar = ({user}) => {
   const [isMobileMenuToggled, setIsMobileMenuToggled] = useState(false);
   const [logout, setLogout] = useState(false);
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
+  // const { user } = useSelector((state) => state.auth);
   const isNonMobileScreens = useMediaQuery('(min-width: 1000px)');
   const { toggleTheme } = useThemeContext();
   const theme = useTheme();
@@ -41,9 +41,10 @@ const Navbar = () => {
   const primaryLight = theme.palette.primary.light;
   const alt = theme.palette.background.alt;
 
-  const iconColor = theme.palette.mode === 'dark' ? dark : theme.palette.text.primary;
+  const iconColor =
+    theme.palette.mode === 'dark' ? dark : theme.palette.text.primary;
 
-  const { refetch } = useLogoutQuery(undefined, {
+  const {} = useLogoutQuery(undefined, {
     skip: !logout,
     refetchOnMountOrArgChange: true,
   });
@@ -93,9 +94,15 @@ const Navbar = () => {
               <DarkMode sx={{ fontSize: '25px', color: iconColor }} />
             )}
           </IconButton>
-          <Message sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }} />
-          <Notifications sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }} />
-          <Help sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }} />
+          <Message
+            sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }}
+          />
+          <Notifications
+            sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }}
+          />
+          <Help
+            sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }}
+          />
           <FormControl variant="standard" value={`@${user.userName}`}>
             <Select
               value={`@${user.userName}`}
@@ -162,9 +169,15 @@ const Navbar = () => {
                 <DarkMode sx={{ fontSize: '25px', color: iconColor }} />
               )}
             </IconButton>
-            <Message sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }} />
-            <Notifications sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }} />
-            <Help sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }} />
+            <Message
+              sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }}
+            />
+            <Notifications
+              sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }}
+            />
+            <Help
+              sx={{ fontSize: '25px', cursor: 'pointer', color: iconColor }}
+            />
             <FormControl variant="standard" value={`@${user.userName}`}>
               <Select
                 value={`@${user.userName}`}

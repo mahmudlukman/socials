@@ -3,8 +3,8 @@ import { apiSlice } from '../api/apiSlice';
 export const userApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getUser: builder.query({
-      query: ({ id }) => ({
-        url: `get-user${id}`,
+      query: ({ userId }) => ({
+        url: `get-user/${userId}`,
         method: 'GET',
         credentials: 'include',
       }),

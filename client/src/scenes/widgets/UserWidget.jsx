@@ -13,10 +13,10 @@ import { useNavigate } from 'react-router-dom';
 import LinkedIn from '../../assets/linkedin.png';
 import Twitter from '../../assets/twitter.png';
 
-const UserWidget = ({ userId, picturePath }) => {
+const UserWidget = ({user}) => {
   const { palette } = useTheme();
   const navigate = useNavigate();
-  const { user } = useSelector((state) => state.auth);
+  // const { user } = useSelector((state) => state.auth);
   const dark = palette.neutral.dark;
   const medium = palette.neutral.medium;
   const main = palette.neutral.main;

@@ -6,6 +6,8 @@ import MyPostWidget from "../../scenes/widgets/MyPostWidget";
 import PostsWidget from "../../scenes/widgets/PostsWidget";
 import AdvertWidget from "../../scenes/widgets/AdvertWidget";
 import FriendListWidget from "../../scenes/widgets/FriendListWidget";
+import { useParams } from "react-router-dom";
+import { useGetUserQuery } from "../../redux/features/user/userApi";
 
 const HomePage = () => {
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
@@ -13,7 +15,7 @@ const HomePage = () => {
 
   return (
     <Box>
-      <Navbar />
+      <Navbar user={user}/>
       <Box
         width="100%"
         padding="2rem 6%"
@@ -22,14 +24,14 @@ const HomePage = () => {
         justifyContent="space-between"
       >
         <Box flexBasis={isNonMobileScreens ? "26%" : undefined}>
-          <UserWidget userId={user} picturePath={user.profilePicture} />
+          <UserWidget user={user} />
         </Box>
         <Box
           flexBasis={isNonMobileScreens ? "42%" : undefined}
           mt={isNonMobileScreens ? undefined : "2rem"}
         >
-          <MyPostWidget picturePath={user.profilePicture} />
-          <PostsWidget userId={user} />
+          <MyPostWidget />
+          <PostsWidget user={user} />
         </Box>
         {isNonMobileScreens && (
           <Box flexBasis="26%">
