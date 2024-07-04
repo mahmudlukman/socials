@@ -25,22 +25,18 @@ export const userApi = apiSlice.injectEndpoints({
       }),
     }),
     updateProfilePicture: builder.mutation({
-      query: (profilePicture) => ({
+      query: ({ profilePicture }) => ({
         url: 'update-profile-picture',
         method: 'PUT',
-        body: {
-          profilePicture,
-        },
+        body: { profilePicture },
         credentials: 'include',
       }),
     }),
     updateCoverPicture: builder.mutation({
-      query: (coverPicture) => ({
+      query: ({ coverPicture }) => ({
         url: 'update-cover-picture',
         method: 'PUT',
-        body: {
-          coverPicture,
-        },
+        body: { coverPicture },
         credentials: 'include',
       }),
     }),
@@ -61,4 +57,12 @@ export const userApi = apiSlice.injectEndpoints({
   }),
 });
 
-export const { useGetUserQuery } = userApi;
+export const {
+  useGetUserQuery,
+  useEditProfileMutation,
+  useUpdateProfilePictureMutation,
+  useUpdateCoverPictureMutation,
+  useUpdateUserRoleMutation,
+  useGetNotificationsQuery,
+  useDeleteUserMutation,
+} = userApi;

@@ -17,7 +17,6 @@ import { MoreVert } from '@mui/icons-material';
 import UserWidget from '../widgets/UserWidget';
 import MyProfileWidget from '../widgets/MyProfileWidget';
 import { useSelector } from 'react-redux';
-import MyProfileCard from '../widgets/MyProfileWidget';
 
 const SettingsPage = () => {
   const isNonMobileScreens = useMediaQuery('(min-width:1000px)');
@@ -42,7 +41,7 @@ const SettingsPage = () => {
           flexBasis={isNonMobileScreens ? '42%' : undefined}
           mt={isNonMobileScreens ? undefined : '2rem'}
         >
-          <MyProfileCard />
+          <MyProfileWidget />
           <Box m="2rem 0" />
         </Box>
       </Box>
