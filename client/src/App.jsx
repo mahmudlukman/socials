@@ -11,6 +11,7 @@ import ProfilePage from './scenes/profilePage/index';
 import { ThemeProvider } from './themeProvider';
 import Navbar from './scenes/navbar';
 import SettingsPage from './scenes/settings';
+import PostPage from './scenes/postPage';
 
 const App = () => {
   const { user } = useSelector((state) => state.auth);
@@ -41,6 +42,10 @@ const App = () => {
             <Route
               path="/profile/:userId"
               element={!user ? <AuthPage /> : <ProfilePage replace={true} />}
+            />
+            <Route
+              path="/post/:userId"
+              element={!user ? <AuthPage /> : <PostPage replace={true} />}
             />
             <Route
               path="/settings"

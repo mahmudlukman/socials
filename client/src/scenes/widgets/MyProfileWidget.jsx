@@ -22,7 +22,6 @@ import { toast } from 'react-hot-toast';
 
 const MyProfileWidget = () => {
   const theme = useTheme();
-  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const [isEditing, setIsEditing] = useState(false);
   const [formValues, setFormValues] = useState({
@@ -63,14 +62,14 @@ const MyProfileWidget = () => {
       if (formValues.profilePicture !== user.profilePicture.url) {
         const formData = new FormData();
         formData.append('profilePicture', formValues.profilePicture);
-        await updateProfilePicture(formData).unwrap();
+        await updateProfilePicture({ ...formData }).unwrap();
       }
 
       // Update cover picture if changed
       if (formValues.coverPicture !== user.coverPicture.url) {
         const formData = new FormData();
         formData.append('coverPicture', formValues.coverPicture);
-        await updateCoverPicture(formData).unwrap();
+        await updateCoverPicture({ ...formData }).unwrap();
       }
 
       setIsEditing(false);
@@ -106,7 +105,11 @@ const MyProfileWidget = () => {
         <CardMedia
           component="img"
           height="200"
-          image={formValues.coverPicture instanceof File ? URL.createObjectURL(formValues.coverPicture) : formValues.coverPicture || 'https://via.placeholder.com/600x200'}
+          image={
+            formValues.coverPicture instanceof File
+              ? URL.createObjectURL(formValues.coverPicture)
+              : formValues.coverPicture || 'https://via.placeholder.com/600x200'
+          }
           alt="Cover Image"
         />
         {isEditing && (
@@ -130,7 +133,11 @@ const MyProfileWidget = () => {
       <Box display="flex" justifyContent="center" mt={-8} position="relative">
         <Avatar
           alt={formValues.userName}
-          src={formValues.profilePicture instanceof File ? URL.createObjectURL(formValues.profilePicture) : formValues.profilePicture || 'https://via.placeholder.com/150'}
+          src={
+            formValues.profilePicture instanceof File
+              ? URL.createObjectURL(formValues.profilePicture)
+              : formValues.profilePicture || 'https://via.placeholder.com/150'
+          }
           sx={{
             width: 120,
             height: 120,
