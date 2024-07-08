@@ -60,21 +60,24 @@ const MyProfileWidget = () => {
 
       // Update profile picture if changed
       if (formValues.profilePicture !== user.profilePicture.url) {
-        const formData = new FormData();
-        formData.append('profilePicture', formValues.profilePicture);
-        await updateProfilePicture({ ...formData }).unwrap();
+        await updateProfilePicture({
+          profilePicture: formValues.profilePicture,
+        }).unwrap();
       }
 
       // Update cover picture if changed
       if (formValues.coverPicture !== user.coverPicture.url) {
-        const formData = new FormData();
-        formData.append('coverPicture', formValues.coverPicture);
-        await updateCoverPicture({ ...formData }).unwrap();
+        await updateCoverPicture({
+          coverPicture: formValues.coverPicture,
+        }).unwrap();
       }
 
       setIsEditing(false);
+      toast.success('Profile updated successfully');
     } catch (error) {
-      toast.error(error);
+      toast.error(
+        error.message || 'An error occurred while updating the profile'
+      );
     }
   };
 
@@ -95,7 +98,11 @@ const MyProfileWidget = () => {
     const { name, files } = e.target;
     if (files && files[0]) {
       const file = files[0];
-      setFormValues({ ...formValues, [name]: file });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormValues({ ...formValues, [name]: reader.result });
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -106,8 +113,8 @@ const MyProfileWidget = () => {
           component="img"
           height="200"
           image={
-            formValues.coverPicture instanceof File
-              ? URL.createObjectURL(formValues.coverPicture)
+            formValues.coverPicture.startsWith('data:image')
+              ? formValues.coverPicture
               : formValues.coverPicture || 'https://via.placeholder.com/600x200'
           }
           alt="Cover Image"
@@ -134,8 +141,8 @@ const MyProfileWidget = () => {
         <Avatar
           alt={formValues.userName}
           src={
-            formValues.profilePicture instanceof File
-              ? URL.createObjectURL(formValues.profilePicture)
+            formValues.profilePicture.startsWith('data:image')
+              ? formValues.profilePicture
               : formValues.profilePicture || 'https://via.placeholder.com/150'
           }
           sx={{

@@ -40,7 +40,7 @@ const PostPage = () => {
         >
           <MyPostWidget user={user} />
           <Box m="2rem 0" />
-          <SinglePostWidget post={post} isProfile />
+          <SinglePostWidget post={post} />
         </Box>
       </Box>
     </Box>

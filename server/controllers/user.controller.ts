@@ -174,6 +174,87 @@ export const updateCoverPicture = catchAsyncError(
   }
 );
 
+// interface IUpdateUser {
+//   name?: string;
+//   userName?: string;
+//   bio?: string;
+//   occupation?: string;
+//   location?: string;
+//   profilePicture?: string;
+//   coverPicture?: string;
+// }
+
+// export const updateUser = catchAsyncError(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const {
+//         name,
+//         userName,
+//         bio,
+//         occupation,
+//         location,
+//         profilePicture,
+//         coverPicture,
+//       } = req.body as IUpdateUser;
+//       const userId = req.user?._id;
+//       const user = await UserModel.findById(userId);
+
+//       if (!user) {
+//         return next(new ErrorHandler('User not found', 400));
+//       }
+
+//       if (name) user.name = name;
+//       if (userName) user.userName = userName;
+//       if (bio) user.bio = bio;
+//       if (occupation) user.occupation = occupation;
+//       if (location) user.location = location;
+
+//       if (profilePicture) {
+//         if (user.profilePicture?.public_id) {
+//           await cloudinary.v2.uploader.destroy(user.profilePicture.public_id);
+//         }
+//         const myCloud = await cloudinary.v2.uploader.upload(profilePicture, {
+//           folder: 'profilePictures',
+//           width: 150,
+//         });
+//         user.profilePicture = {
+//           public_id: myCloud.public_id,
+//           url: myCloud.secure_url,
+//         };
+//       }
+
+//       if (coverPicture) {
+//         if (user.coverPicture?.public_id) {
+//           await cloudinary.v2.uploader.destroy(user.coverPicture.public_id);
+//         }
+//         const myCloud = await cloudinary.v2.uploader.upload(coverPicture, {
+//           folder: 'coverPictures',
+//           width: 150,
+//         });
+//         user.coverPicture = {
+//           public_id: myCloud.public_id,
+//           url: myCloud.secure_url,
+//         };
+//       }
+
+//       await user.save();
+
+//       res.status(200).json({
+//         success: true,
+//         user,
+//       });
+//     } catch (error: any) {
+//       if (error.code === 11000) {
+//         if (error.keyValue.userName) {
+//           return next(new ErrorHandler('Username already exists', 400));
+//         }
+//       }
+//       return next(new ErrorHandler(error.message, 400));
+//     }
+//   }
+// );
+
+
 // Follow and unfollow user
 export const followUnfollowUser = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
