@@ -9,9 +9,9 @@ export const userApi = apiSlice.injectEndpoints({
         credentials: 'include',
       }),
     }),
-    editProfile: builder.mutation({
+    updateUserProfile: builder.mutation({
       query: (data) => ({
-        url: 'update-user',
+        url: 'update-user-profile',
         method: 'PUT',
         body: data,
         credentials: 'include',
@@ -24,22 +24,22 @@ export const userApi = apiSlice.injectEndpoints({
         credentials: 'include',
       }),
     }),
-    updateProfilePicture: builder.mutation({
-      query: ({ profilePicture }) => ({
-        url: 'update-profile-picture',
-        method: 'PUT',
-        body: { profilePicture },
-        credentials: 'include',
-      }),
-    }),
-    updateCoverPicture: builder.mutation({
-      query: ({ coverPicture }) => ({
-        url: 'update-cover-picture',
-        method: 'PUT',
-        body: { coverPicture },
-        credentials: 'include',
-      }),
-    }),
+    // updateProfilePicture: builder.mutation({
+    //   query: ({ profilePicture }) => ({
+    //     url: 'update-profile-picture',
+    //     method: 'PUT',
+    //     body: { profilePicture },
+    //     credentials: 'include',
+    //   }),
+    // }),
+    // updateCoverPicture: builder.mutation({
+    //   query: ({ coverPicture }) => ({
+    //     url: 'update-cover-picture',
+    //     method: 'PUT',
+    //     body: { coverPicture },
+    //     credentials: 'include',
+    //   }),
+    // }),
     followUnfollow: builder.mutation({
       query: (id) => ({
         url: `follow-unfollow/${id}`,
@@ -66,9 +66,7 @@ export const userApi = apiSlice.injectEndpoints({
 
 export const {
   useGetUserQuery,
-  useEditProfileMutation,
-  useUpdateProfilePictureMutation,
-  useUpdateCoverPictureMutation,
+  useUpdateUserProfileMutation,
   useUpdateUserRoleMutation,
   useFollowUnfollowMutation,
   useGetNotificationsQuery,

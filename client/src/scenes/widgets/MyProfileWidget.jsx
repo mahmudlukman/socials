@@ -12,12 +12,8 @@ import {
   useTheme,
 } from '@mui/material';
 import { Edit, Save, Cancel } from '@mui/icons-material';
-import { useSelector, useDispatch } from 'react-redux';
-import {
-  useEditProfileMutation,
-  useUpdateProfilePictureMutation,
-  useUpdateCoverPictureMutation,
-} from '../../redux/features/user/userApi';
+import { useSelector } from 'react-redux';
+import { useUpdateUserProfileMutation } from '../../redux/features/user/userApi';
 import { toast } from 'react-hot-toast';
 
 const MyProfileWidget = () => {
@@ -34,9 +30,7 @@ const MyProfileWidget = () => {
     coverPicture: user.coverPicture.url,
   });
 
-  const [editProfile] = useEditProfileMutation();
-  const [updateProfilePicture] = useUpdateProfilePictureMutation();
-  const [updateCoverPicture] = useUpdateCoverPictureMutation();
+  const [updateUserProfile] = useUpdateUserProfileMutation();
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -49,35 +43,27 @@ const MyProfileWidget = () => {
 
   const handleSave = async () => {
     try {
-      // Update profile information
-      await editProfile({
+      const updatedData = {
         name: formValues.name,
         userName: formValues.userName,
         location: formValues.location,
         occupation: formValues.occupation,
         bio: formValues.bio,
-      }).unwrap();
+      };
 
-      // Update profile picture if changed
       if (formValues.profilePicture !== user.profilePicture.url) {
-        await updateProfilePicture({
-          profilePicture: formValues.profilePicture,
-        }).unwrap();
+        updatedData.profilePicture = formValues.profilePicture;
       }
 
-      // Update cover picture if changed
       if (formValues.coverPicture !== user.coverPicture.url) {
-        await updateCoverPicture({
-          coverPicture: formValues.coverPicture,
-        }).unwrap();
+        updatedData.coverPicture = formValues.coverPicture;
       }
 
+      await updateUserProfile(updatedData).unwrap();
       setIsEditing(false);
       toast.success('Profile updated successfully');
     } catch (error) {
-      toast.error(
-        error.message || 'An error occurred while updating the profile'
-      );
+      toast.error(error.message || 'An error occurred while updating the profile');
     }
   };
 

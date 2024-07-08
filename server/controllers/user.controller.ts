@@ -32,170 +32,21 @@ export const getUser = catchAsyncError(
   }
 );
 
-// update user info
-interface IUpdateUserInfo {
-  name?: string;
-  userName?: string;
-  bio?: string;
-  occupation?: string;
-  location?: string;
-}
-
-// update user info
-export const updateUserInfo = catchAsyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { name, userName, bio, occupation, location } =
-        req.body as IUpdateUserInfo;
-      const userId = req.user?._id;
-      const user = await UserModel.findById(userId);
-
-      if (!user) {
-        return next(new ErrorHandler('User not found', 400));
-      }
-
-      if (name) user.name = name;
-      if (userName) user.userName = userName;
-      if (bio) user.bio = bio;
-      if (occupation) user.occupation = occupation;
-      if (location) user.location = location;
-
-      await user.save();
-
-      res.status(201).json({
-        success: true,
-        user,
-      });
-    } catch (error: any) {
-      // Handle MongoDB duplicate key error
-      if (error.code === 11000) {
-        if (error.keyValue.userName) {
-          return next(new ErrorHandler('Username already exists', 400));
-        }
-      }
-      return next(new ErrorHandler(error.message, 400));
-    }
-  }
-);
-
-// update user profile picture
-interface IUpdateProfilePicture {
-  profilePicture: string;
-}
-
-export const updateProfilePicture = catchAsyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { profilePicture } = req.body as IUpdateProfilePicture;
-
-      const userId = req.user?._id;
-
-      const user = await UserModel.findById(userId);
-
-      if (profilePicture && user) {
-        // if user have one avatar then call this if
-        if (user?.profilePicture?.public_id) {
-          // first delete the old image
-          await cloudinary.v2.uploader.destroy(user?.profilePicture?.public_id);
-
-          const myCloud = await cloudinary.v2.uploader.upload(profilePicture, {
-            folder: 'profilePictures',
-            width: 150,
-          });
-          user.profilePicture = {
-            public_id: myCloud.public_id,
-            url: myCloud.secure_url,
-          };
-        } else {
-          const myCloud = await cloudinary.v2.uploader.upload(profilePicture, {
-            folder: 'profilePictures',
-            width: 150,
-          });
-          user.profilePicture = {
-            public_id: myCloud.public_id,
-            url: myCloud.secure_url,
-          };
-        }
-      }
-
-      await user?.save();
-
-      res.status(200).json({ success: true, user });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
-    }
-  }
-);
-
-// update user profile picture
-interface IUpdateCoverPicture {
-  coverPicture: string;
-}
-
-export const updateCoverPicture = catchAsyncError(
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { coverPicture } = req.body as IUpdateCoverPicture;
-
-      const userId = req.user?._id;
-
-      const user = await UserModel.findById(userId);
-
-      if (coverPicture && user) {
-        if (user?.coverPicture?.public_id) {
-          await cloudinary.v2.uploader.destroy(user?.coverPicture?.public_id);
-
-          const myCloud = await cloudinary.v2.uploader.upload(coverPicture, {
-            folder: 'coverPictures',
-            width: 150,
-          });
-          user.coverPicture = {
-            public_id: myCloud.public_id,
-            url: myCloud.secure_url,
-          };
-        } else {
-          const myCloud = await cloudinary.v2.uploader.upload(coverPicture, {
-            folder: 'coverPictures',
-            width: 150,
-          });
-          user.coverPicture = {
-            public_id: myCloud.public_id,
-            url: myCloud.secure_url,
-          };
-        }
-      }
-
-      await user?.save();
-
-      res.status(200).json({ success: true, user });
-    } catch (error: any) {
-      return next(new ErrorHandler(error.message, 400));
-    }
-  }
-);
-
-// interface IUpdateUser {
+// // update user info
+// interface IUpdateUserInfo {
 //   name?: string;
 //   userName?: string;
 //   bio?: string;
 //   occupation?: string;
 //   location?: string;
-//   profilePicture?: string;
-//   coverPicture?: string;
 // }
 
-// export const updateUser = catchAsyncError(
+// // update user info
+// export const updateUserInfo = catchAsyncError(
 //   async (req: Request, res: Response, next: NextFunction) => {
 //     try {
-//       const {
-//         name,
-//         userName,
-//         bio,
-//         occupation,
-//         location,
-//         profilePicture,
-//         coverPicture,
-//       } = req.body as IUpdateUser;
+//       const { name, userName, bio, occupation, location } =
+//         req.body as IUpdateUserInfo;
 //       const userId = req.user?._id;
 //       const user = await UserModel.findById(userId);
 
@@ -209,41 +60,14 @@ export const updateCoverPicture = catchAsyncError(
 //       if (occupation) user.occupation = occupation;
 //       if (location) user.location = location;
 
-//       if (profilePicture) {
-//         if (user.profilePicture?.public_id) {
-//           await cloudinary.v2.uploader.destroy(user.profilePicture.public_id);
-//         }
-//         const myCloud = await cloudinary.v2.uploader.upload(profilePicture, {
-//           folder: 'profilePictures',
-//           width: 150,
-//         });
-//         user.profilePicture = {
-//           public_id: myCloud.public_id,
-//           url: myCloud.secure_url,
-//         };
-//       }
-
-//       if (coverPicture) {
-//         if (user.coverPicture?.public_id) {
-//           await cloudinary.v2.uploader.destroy(user.coverPicture.public_id);
-//         }
-//         const myCloud = await cloudinary.v2.uploader.upload(coverPicture, {
-//           folder: 'coverPictures',
-//           width: 150,
-//         });
-//         user.coverPicture = {
-//           public_id: myCloud.public_id,
-//           url: myCloud.secure_url,
-//         };
-//       }
-
 //       await user.save();
 
-//       res.status(200).json({
+//       res.status(201).json({
 //         success: true,
 //         user,
 //       });
 //     } catch (error: any) {
+//       // Handle MongoDB duplicate key error
 //       if (error.code === 11000) {
 //         if (error.keyValue.userName) {
 //           return next(new ErrorHandler('Username already exists', 400));
@@ -253,6 +77,182 @@ export const updateCoverPicture = catchAsyncError(
 //     }
 //   }
 // );
+
+// // update user profile picture
+// interface IUpdateProfilePicture {
+//   profilePicture: string;
+// }
+
+// export const updateProfilePicture = catchAsyncError(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const { profilePicture } = req.body as IUpdateProfilePicture;
+
+//       const userId = req.user?._id;
+
+//       const user = await UserModel.findById(userId);
+
+//       if (profilePicture && user) {
+//         // if user have one avatar then call this if
+//         if (user?.profilePicture?.public_id) {
+//           // first delete the old image
+//           await cloudinary.v2.uploader.destroy(user?.profilePicture?.public_id);
+
+//           const myCloud = await cloudinary.v2.uploader.upload(profilePicture, {
+//             folder: 'profilePictures',
+//             width: 150,
+//           });
+//           user.profilePicture = {
+//             public_id: myCloud.public_id,
+//             url: myCloud.secure_url,
+//           };
+//         } else {
+//           const myCloud = await cloudinary.v2.uploader.upload(profilePicture, {
+//             folder: 'profilePictures',
+//             width: 150,
+//           });
+//           user.profilePicture = {
+//             public_id: myCloud.public_id,
+//             url: myCloud.secure_url,
+//           };
+//         }
+//       }
+
+//       await user?.save();
+
+//       res.status(200).json({ success: true, user });
+//     } catch (error: any) {
+//       return next(new ErrorHandler(error.message, 400));
+//     }
+//   }
+// );
+
+// // update user profile picture
+// interface IUpdateCoverPicture {
+//   coverPicture: string;
+// }
+
+// export const updateCoverPicture = catchAsyncError(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const { coverPicture } = req.body as IUpdateCoverPicture;
+
+//       const userId = req.user?._id;
+
+//       const user = await UserModel.findById(userId);
+
+//       if (coverPicture && user) {
+//         if (user?.coverPicture?.public_id) {
+//           await cloudinary.v2.uploader.destroy(user?.coverPicture?.public_id);
+
+//           const myCloud = await cloudinary.v2.uploader.upload(coverPicture, {
+//             folder: 'coverPictures',
+//             width: 150,
+//           });
+//           user.coverPicture = {
+//             public_id: myCloud.public_id,
+//             url: myCloud.secure_url,
+//           };
+//         } else {
+//           const myCloud = await cloudinary.v2.uploader.upload(coverPicture, {
+//             folder: 'coverPictures',
+//             width: 150,
+//           });
+//           user.coverPicture = {
+//             public_id: myCloud.public_id,
+//             url: myCloud.secure_url,
+//           };
+//         }
+//       }
+
+//       await user?.save();
+
+//       res.status(200).json({ success: true, user });
+//     } catch (error: any) {
+//       return next(new ErrorHandler(error.message, 400));
+//     }
+//   }
+// );
+
+interface IUpdateUser {
+  name?: string;
+  userName?: string;
+  bio?: string;
+  occupation?: string;
+  location?: string;
+  profilePicture?: string;
+  coverPicture?: string;
+}
+
+export const updateUserProfile = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const {
+        name,
+        userName,
+        bio,
+        occupation,
+        location,
+        profilePicture,
+        coverPicture,
+      } = req.body as IUpdateUser;
+      const userId = req.user?._id;
+      const user = await UserModel.findById(userId);
+
+      if (!user) {
+        return next(new ErrorHandler('User not found', 400));
+      }
+
+      if (name) user.name = name;
+      if (userName) user.userName = userName;
+      if (bio) user.bio = bio;
+      if (occupation) user.occupation = occupation;
+      if (location) user.location = location;
+
+      if (profilePicture) {
+        if (user.profilePicture?.public_id) {
+          await cloudinary.v2.uploader.destroy(user.profilePicture.public_id);
+        }
+        const myCloud = await cloudinary.v2.uploader.upload(profilePicture, {
+          folder: 'profilePictures',
+          width: 150,
+        });
+        user.profilePicture = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
+      }
+
+      if (coverPicture) {
+        if (user.coverPicture?.public_id) {
+          await cloudinary.v2.uploader.destroy(user.coverPicture.public_id);
+        }
+        const myCloud = await cloudinary.v2.uploader.upload(coverPicture, {
+          folder: 'coverPictures',
+          width: 150,
+        });
+        user.coverPicture = {
+          public_id: myCloud.public_id,
+          url: myCloud.secure_url,
+        };
+      }
+
+      await user.save();
+
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error: any) {
+      if (error.code === 11000) {
+        if (error.keyValue.userName) {
+          return next(new ErrorHandler('Username already exists', 400));
+        }
+      }
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
 
 
 // Follow and unfollow user

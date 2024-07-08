@@ -7,10 +7,11 @@ import {
   // getNotification,
   // getUserFriends,
   getUserInfo,
-  updateCoverPicture,
+  // updateCoverPicture,
   updatePassword,
-  updateProfilePicture,
-  updateUserInfo,
+  // updateProfilePicture,
+  // updateUserInfo,
+  updateUserProfile,
   updateUserStatus,
 } from '../controllers/user.controller';
 import { isAuthenticated, authorizeRoles } from '../middleware/auth';
@@ -19,13 +20,13 @@ const userRouter = express.Router();
 
 userRouter.get('/me', isAuthenticated, getUserInfo);
 userRouter.get('/get-user/:id', isAuthenticated, getUser);
-userRouter.put('/update-user', isAuthenticated, updateUserInfo);
-userRouter.put(
-  '/update-profile-picture',
-  isAuthenticated,
-  updateProfilePicture
-);
-userRouter.put('/update-cover-picture', isAuthenticated, updateCoverPicture);
+userRouter.put('/update-user-profile', isAuthenticated, updateUserProfile);
+// userRouter.put(
+//   '/update-profile-picture',
+//   isAuthenticated,
+//   updateProfilePicture
+// );
+// userRouter.put('/update-cover-picture', isAuthenticated, updateCoverPicture);
 userRouter.get('/get-notifications', isAuthenticated, getNotifications);
 userRouter.put('/follow-unfollow', isAuthenticated, followUnfollowUser);
 userRouter.get(
