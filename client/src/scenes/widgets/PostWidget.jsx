@@ -12,28 +12,25 @@ import {
   useTheme,
 } from '@mui/material';
 import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import {
   useUpdateLikesMutation,
   useGetPostsQuery,
 } from '../../redux/features/post/postApi';
 import moment from 'moment';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { MoreVert, ThumbUpAlt, ThumbUpAltOutlined, Share } from '@mui/icons-material';
 
-const PostWidget = ({ post }) => {
+const PostWidget = ({ post, user }) => {
   const { palette } = useTheme();
-  const { user } = useSelector((state) => state.auth);
   const [likes, setLikes] = useState(post?.likes || []);
   const [updateLikes] = useUpdateLikesMutation();
   const navigate = useNavigate();
-  const main = palette.neutral.main;
 
   const hasLikedPost = likes.some((like) => like.userId === user._id);
 
-  const handleLike = async () => {
+  const handleLike = async (e) => {
+    e.stopPropagation(); // Prevent navigation when liking
     try {
-      // Optimistic UI update
       await updateLikes({ postId: post._id });
       const updatedLikes = hasLikedPost
         ? likes.filter((like) => like.userId !== user._id)
@@ -41,7 +38,6 @@ const PostWidget = ({ post }) => {
 
       setLikes(updatedLikes);
     } catch (error) {
-      // Rollback the optimistic UI update on error
       setLikes(
         hasLikedPost
           ? [...likes, { userId: user._id, userName: user.userName }]
@@ -77,6 +73,15 @@ const PostWidget = ({ post }) => {
     );
   };
 
+  const handlePostClick = () => {
+    navigate(`/post/${post._id}`);
+  };
+
+  const handleProfileClick = (e) => {
+    e.stopPropagation(); // Prevent navigation to post when clicking on profile
+    navigate(`/profile/${post?.user._id}`);
+  };
+
   return (
     <Card
       sx={{
@@ -84,21 +89,28 @@ const PostWidget = ({ post }) => {
         backgroundColor: palette.background.alt,
         borderRadius: '0.75rem',
         m: '2rem 0',
+        cursor: 'pointer',
+        '&:hover': {
+          boxShadow: '0 0 10px rgba(0,0,0,0.1)',
+        },
       }}
+      onClick={handlePostClick}
     >
-      <Box onClick={() => navigate(`/profile/${post?.user._id}`)} sx={{ cursor: 'pointer' }}>
+      <Box onClick={handleProfileClick} sx={{ cursor: 'pointer' }}>
         <CardHeader
           avatar={
             <Avatar
               sx={{ bgcolor: 'grey' }}
               aria-label="avatar"
-              src={post?.user?.profilePicture?.url || ''}
+              src={post?.user?._id === user?._id 
+                ? user?.profilePicture?.url 
+                : post?.user?.profilePicture?.url}
             >
               {!post?.user?.profilePicture?.url && post?.user?.name?.charAt(0)}
             </Avatar>
           }
           action={
-            <IconButton aria-label="settings">
+            <IconButton aria-label="settings" onClick={(e) => e.stopPropagation()}>
               <MoreVert />
             </IconButton>
           }
@@ -121,17 +133,16 @@ const PostWidget = ({ post }) => {
         )}
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
+        <IconButton aria-label="add to favorites" onClick={handleLike}>
           <Button
             size="small"
             color="primary"
             disabled={!user}
-            onClick={handleLike}
           >
             <Likes />
           </Button>
         </IconButton>
-        <IconButton aria-label="share">
+        <IconButton aria-label="share" onClick={(e) => e.stopPropagation()}>
           <Share />
         </IconButton>
       </CardActions>

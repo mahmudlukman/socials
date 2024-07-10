@@ -13,7 +13,6 @@ const PostPage = () => {
   const { data: user, isLoading } = useGetUserQuery({userId});
   const { data: post } = useGetPostsQuery();
 
-  console.log(post)
 
   if (isLoading) {
     return <CircularProgress/>;

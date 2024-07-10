@@ -1,125 +1,207 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  Box,
-  Card,
-  CardContent,
-  CardMedia,
-  Typography,
-  Button,
-  IconButton,
   Avatar,
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  CardMedia,
+  CircularProgress,
+  IconButton,
   TextField,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
+  Typography,
   useTheme,
 } from '@mui/material';
-import { Edit, Delete } from '@mui/icons-material';
-import { useSelector } from 'react-redux';
-import { useFollowUnfollowMutation } from '../../redux/features/user/userApi';
-import { useAddRepliesMutation } from '../../redux/features/post/postApi';
-import { toast } from 'react-hot-toast';
+import {
+  useUpdateLikesMutation,
+  useAddReplyMutation,
+  useGetPostsQuery,
+} from '../../redux/features/post/postApi';
+import {
+  useFollowUnfollowMutation,
+  useGetUserQuery,
+} from '../../redux/features/user/userApi';
+import moment from 'moment';
+import { useNavigate, useParams } from 'react-router-dom';
+import { MoreVert, ThumbUpAlt, ThumbUpAltOutlined, Share, Send } from '@mui/icons-material';
 
-const SinglePostWidget = ({ post }) => {
-  const theme = useTheme();
-  const { user } = useSelector((state) => state.auth);
-  const [comment, setComment] = useState('');
-  const [comments, setComments] = useState(post.comments);
-  const [followUser] = useFollowUnfollowMutation();
-  const [addComment] = useAddRepliesMutation();
+const SinglePost = ({ currentUser }) => {
+  const { postId } = useParams();
+  const { palette } = useTheme();
+  const navigate = useNavigate();
 
+  const { data: postsData, isLoading: isPostsLoading } = useGetPostsQuery();
+  const [updateLikes] = useUpdateLikesMutation();
+  const [addReply] = useAddReplyMutation();
+  const [followUnfollow] = useFollowUnfollowMutation();
+  
+  const [post, setPost] = useState(null);
+  const [likes, setLikes] = useState([]);
+  const [replies, setReplies] = useState([]);
+  const [newReply, setNewReply] = useState('');
+  const [isFollowing, setIsFollowing] = useState(false);
 
-  const handleFollow = async () => {
+  const { data: userData, isLoading: isUserLoading } = useGetUserQuery({ userId: post?.user?._id }, { skip: !post?.user?._id });
+
+  useEffect(() => {
+    if (postsData) {
+      const foundPost = postsData.posts.find(p => p._id === postId);
+      if (foundPost) {
+        setPost(foundPost);
+        setLikes(foundPost.likes || []);
+        setReplies(foundPost.replies || []);
+      }
+    }
+  }, [postsData, postId]);
+
+  useEffect(() => {
+    if (userData && currentUser) {
+      setIsFollowing(currentUser.following.some(follow => follow.userId === userData.user._id));
+    }
+  }, [userData, currentUser]);
+
+  if (isPostsLoading || isUserLoading) {
+    return <CircularProgress />;
+  }
+
+  if (!post) {
+    return <Typography>Post not found</Typography>;
+  }
+
+  const handleLike = async () => {
     try {
-      await followUser(post.author.id).unwrap();
-      toast.success('You are now following this user');
+      await updateLikes({ postId: post._id });
+      const updatedLikes = likes.some((like) => like.userId === currentUser._id)
+        ? likes.filter((like) => like.userId !== currentUser._id)
+        : [...likes, { userId: currentUser._id, userName: currentUser.userName }];
+      setLikes(updatedLikes);
     } catch (error) {
-      toast.error('Failed to follow the user');
+      console.error('Error updating likes: ', error);
     }
   };
 
-  const handleAddComment = async () => {
-    if (comment.trim()) {
+  const handleReply = async () => {
+    if (newReply.trim()) {
       try {
-        const newComment = await addComment({
-          postId: post.id,
-          comment,
-        }).unwrap();
-        setComments([...comments, newComment]);
-        setComment('');
-        toast.success('Comment added');
+        await addReply({ postId: post._id, content: newReply });
+        setReplies([...replies, { user: currentUser, content: newReply, createdAt: new Date() }]);
+        setNewReply('');
       } catch (error) {
-        toast.error('Failed to add comment');
+        console.error('Error adding reply: ', error);
       }
     }
   };
 
+  const handleFollow = async () => {
+    try {
+      await followUnfollow(post.user._id);
+      setIsFollowing(!isFollowing);
+    } catch (error) {
+      console.error('Error following/unfollowing: ', error);
+    }
+  };
+
+  const Likes = () => {
+    if (likes.length > 0) {
+      return likes.some((like) => like.userId === currentUser._id) ? (
+        <>
+          <ThumbUpAlt fontSize="small" />
+          &nbsp;
+          {likes.length > 2
+            ? `You and ${likes.length - 1} others`
+            : `${likes.length} like${likes.length > 1 ? 's' : ''}`}
+        </>
+      ) : (
+        <>
+          <ThumbUpAltOutlined fontSize="small" />
+          &nbsp;{likes.length} {likes.length === 1 ? 'Like' : 'Likes'}
+        </>
+      );
+    }
+    return (
+      <>
+        <ThumbUpAltOutlined fontSize="small" />
+        &nbsp;
+      </>
+    );
+  };
+
   return (
-    <Card sx={{ maxWidth: 600, margin: 'auto', mt: 3 }}>
-      <CardContent>
-        <Box display="flex" alignItems="center" mb={2}>
+    <Card sx={{ maxWidth: 600, margin: 'auto', mt: 4 }}>
+      <CardHeader
+        avatar={
           <Avatar
-            alt={post.author.userName}
-            src={post.author.profilePicture.url}
-            sx={{ width: 50, height: 50, mr: 2 }}
-          />
-          <Box>
-            <Typography variant="h6">{post.author.userName}</Typography>
-            <Button variant="contained" color="primary" onClick={handleFollow}>
-              Follow
-            </Button>
-          </Box>
-        </Box>
-        <Typography variant="body1" mb={2}>
-          {post.content}
+            sx={{ bgcolor: 'grey', cursor: 'pointer' }}
+            aria-label="avatar"
+            src={post.user.profilePicture?.url}
+            onClick={() => navigate(`/profile/${post.user._id}`)}
+          >
+            {!post.user.profilePicture?.url && post.user.name.charAt(0)}
+          </Avatar>
+        }
+        action={
+          <>
+            <IconButton aria-label="settings">
+              <MoreVert />
+            </IconButton>
+            {currentUser._id !== post.user._id && (
+              <Button onClick={handleFollow}>
+                {isFollowing ? 'Unfollow' : 'Follow'}
+              </Button>
+            )}
+          </>
+        }
+        title={`${post.user.name} @${post.user.userName}`}
+        subheader={moment(post.createdAt).fromNow()}
+      />
+      <CardContent>
+        <Typography variant="body2" color="text.secondary">
+          {post.title}
         </Typography>
         {post.image && (
           <CardMedia
             component="img"
-            height="200"
-            image={post.image}
-            alt="Post Image"
-            sx={{ mb: 2 }}
+            height="194"
+            image={post.image.url}
+            alt="Post image"
           />
         )}
-        <Typography variant="h6">Comments</Typography>
-        <List>
-          {comments.map((comment) => (
-            <ListItem key={comment.id} alignItems="flex-start">
-              <ListItemAvatar>
-                <Avatar
-                  alt={comment.user.userName}
-                  src={comment.user.profilePicture.url}
-                />
-              </ListItemAvatar>
-              <ListItemText
-                primary={comment.user.userName}
-                secondary={comment.content}
-              />
-            </ListItem>
-          ))}
-        </List>
-        <Box display="flex" mt={2}>
+      </CardContent>
+      <CardActions disableSpacing>
+        <IconButton onClick={handleLike}>
+          <Likes />
+        </IconButton>
+        <IconButton aria-label="share">
+          <Share />
+        </IconButton>
+      </CardActions>
+
+      <CardContent>
+        <Typography variant="h6">Replies</Typography>
+        {replies.map((reply, index) => (
+          <Box key={index} sx={{ mb: 2 }}>
+            <Typography variant="subtitle2">{reply.user.name}</Typography>
+            <Typography variant="body2">{reply.content}</Typography>
+            <Typography variant="caption">{moment(reply.createdAt).fromNow()}</Typography>
+          </Box>
+        ))}
+        <Box sx={{ display: 'flex', mt: 2 }}>
           <TextField
             fullWidth
             variant="outlined"
-            label="Add a comment"
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
+            placeholder="Add a reply"
+            value={newReply}
+            onChange={(e) => setNewReply(e.target.value)}
           />
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAddComment}
-            sx={{ ml: 2 }}
-          >
-            Comment
-          </Button>
+          <IconButton onClick={handleReply}>
+            <Send />
+          </IconButton>
         </Box>
       </CardContent>
     </Card>
   );
 };
 
-export default SinglePostWidget;
+export default SinglePost;

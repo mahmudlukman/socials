@@ -9,7 +9,6 @@ import ResetPassword from './scenes/authPage/ResetPassword';
 import ActivationPage from './scenes/authPage/Activation';
 import ProfilePage from './scenes/profilePage/index';
 import { ThemeProvider } from './themeProvider';
-import Navbar from './scenes/navbar';
 import SettingsPage from './scenes/settings';
 import PostPage from './scenes/postPage';
 

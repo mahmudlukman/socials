@@ -4,6 +4,7 @@ import Post from '../models/Post';
 import { catchAsyncError } from '../middleware/catchAsyncError';
 import ErrorHandler from '../utils/errorHandler';
 import Notification from '../models/Notification';
+import UserModel from '../models/User';
 
 export const createPost = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -78,13 +79,25 @@ export const getAllPosts = catchAsyncError(
   }
 );
 // get all posts
-export const getAllUserPosts = catchAsyncError(
+export const getUserPosts = catchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userId = req.user?._id;
-      const posts = await Post.find({ 'user._id': userId }).sort({
-        createdAt: -1,
-      });
+      const { userId } = req.params;
+
+      if (!userId) {
+        return next(new ErrorHandler('User ID is required', 400));
+      }
+
+      const posts = await Post.find({ user: userId })
+        .sort({ createdAt: -1 })
+        .populate('user', 'name email profilePicture');
+
+      if (posts.length === 0) {
+        const userExists = await UserModel.exists({ _id: userId });
+        if (!userExists) {
+          return next(new ErrorHandler('User not found', 404));
+        }
+      }
 
       res.status(200).json({ success: true, posts });
     } catch (error: any) {
@@ -92,6 +105,44 @@ export const getAllUserPosts = catchAsyncError(
     }
   }
 );
+
+export const singlePost = catchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { postId } = req.params;
+
+      const post = await Post.findById(postId)
+        .populate('user', 'name email profilePicture')
+        .populate('replies.user', 'name email profilePicture')
+        .populate('replies.reply.user', 'name email profilePicture');
+
+      if (!post) {
+        return next(new ErrorHandler('Post not found', 404));
+      }
+
+      res.status(200).json({
+        success: true,
+        post,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+// export const getAllUserPosts = catchAsyncError(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     try {
+//       const userId = req.user?._id;
+//       const posts = await Post.find({ 'user._id': userId }).sort({
+//         createdAt: -1,
+//       });
+
+//       res.status(200).json({ success: true, posts });
+//     } catch (error: any) {
+//       return next(new ErrorHandler(error.message, 400));
+//     }
+//   }
+// );
 // export const getAllUserPosts = catchAsyncError(
 //   async (req: Request, res: Response, next: NextFunction) => {
 //     try {

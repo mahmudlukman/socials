@@ -21,13 +21,13 @@ const MyProfileWidget = () => {
   const { user } = useSelector((state) => state.auth);
   const [isEditing, setIsEditing] = useState(false);
   const [formValues, setFormValues] = useState({
-    name: user.name,
-    userName: user.userName,
-    location: user.location,
-    occupation: user.occupation,
-    bio: user.bio,
-    profilePicture: user.profilePicture.url,
-    coverPicture: user.coverPicture.url,
+    name: user.name || '',
+    userName: user.userName || '',
+    location: user.location || '',
+    occupation: user.occupation || '',
+    bio: user.bio || '',
+    profilePicture: user.profilePicture?.url || '',
+    coverPicture: user.coverPicture?.url || '',
   });
 
   const [updateUserProfile] = useUpdateUserProfileMutation();
@@ -51,11 +51,17 @@ const MyProfileWidget = () => {
         bio: formValues.bio,
       };
 
-      if (formValues.profilePicture !== user.profilePicture.url) {
+      if (
+        formValues.profilePicture &&
+        formValues.profilePicture !== user.profilePicture?.url
+      ) {
         updatedData.profilePicture = formValues.profilePicture;
       }
 
-      if (formValues.coverPicture !== user.coverPicture.url) {
+      if (
+        formValues.coverPicture &&
+        formValues.coverPicture !== user.coverPicture?.url
+      ) {
         updatedData.coverPicture = formValues.coverPicture;
       }
 
@@ -63,7 +69,9 @@ const MyProfileWidget = () => {
       setIsEditing(false);
       toast.success('Profile updated successfully');
     } catch (error) {
-      toast.error(error.message || 'An error occurred while updating the profile');
+      toast.error(
+        error.message || 'An error occurred while updating the profile'
+      );
     }
   };
 
@@ -99,9 +107,7 @@ const MyProfileWidget = () => {
           component="img"
           height="200"
           image={
-            formValues.coverPicture.startsWith('data:image')
-              ? formValues.coverPicture
-              : formValues.coverPicture || 'https://via.placeholder.com/600x200'
+            formValues.coverPicture || 'https://via.placeholder.com/600x200'
           }
           alt="Cover Image"
         />
@@ -126,11 +132,7 @@ const MyProfileWidget = () => {
       <Box display="flex" justifyContent="center" mt={-8} position="relative">
         <Avatar
           alt={formValues.userName}
-          src={
-            formValues.profilePicture.startsWith('data:image')
-              ? formValues.profilePicture
-              : formValues.profilePicture || 'https://via.placeholder.com/150'
-          }
+          src={formValues.profilePicture || 'https://via.placeholder.com/150'}
           sx={{
             width: 120,
             height: 120,
