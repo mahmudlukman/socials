@@ -43,7 +43,7 @@ const App = () => {
               element={!user ? <AuthPage /> : <ProfilePage replace={true} />}
             />
             <Route
-              path="/post/:userId"
+              path="/post/:postId"
               element={!user ? <AuthPage /> : <PostPage replace={true} />}
             />
             <Route

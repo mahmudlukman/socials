@@ -79,7 +79,7 @@ const PostWidget = ({ post, user }) => {
 
   const handleProfileClick = (e) => {
     e.stopPropagation(); // Prevent navigation to post when clicking on profile
-    navigate(`/profile/${post?.user._id}`);
+    navigate(`/profile/${post?._id}`);
   };
 
   return (

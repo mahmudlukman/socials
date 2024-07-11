@@ -4,14 +4,14 @@ import Navbar from "../../scenes/navbar";
 import MyPostWidget from "../../scenes/widgets/MyPostWidget";
 import UserWidget from "../../scenes/widgets/UserWidget";
 import { useGetUserQuery } from "../../redux/features/user/userApi";
-import { useGetPostsQuery } from "../../redux/features/post/postApi";
-import SinglePostWidget from "../widgets/SinglePostWidget";
+import { useGetPostQuery } from "../../redux/features/post/postApi";
+import PostDetailsWidget from "../widgets/PostDetailsWidget";
 
 const PostPage = () => {
   const { userId } = useParams();
   const isNonMobileScreens = useMediaQuery("(min-width:1000px)");
   const { data: user, isLoading } = useGetUserQuery({userId});
-  const { data: post } = useGetPostsQuery();
+  const { data: post } = useGetPostQuery();
 
 
   if (isLoading) {
@@ -39,7 +39,7 @@ const PostPage = () => {
         >
           <MyPostWidget user={user} />
           <Box m="2rem 0" />
-          <SinglePostWidget post={post} />
+          <PostDetailsWidget post={post} currentUser={user}/>
         </Box>
       </Box>
     </Box>

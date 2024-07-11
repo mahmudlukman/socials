@@ -17,6 +17,13 @@ export const postApi = apiSlice.injectEndpoints({
         credentials: 'include',
       }),
     }),
+    getPost: builder.query({
+      query: (postId) => ({
+        url: `get-post/${postId}`,
+        method: 'GET',
+        credentials: 'include',
+      }),
+    }),
     getUserPosts: builder.query({
       query: () => ({
         url: 'get-user-posts',
@@ -73,6 +80,7 @@ export const postApi = apiSlice.injectEndpoints({
 export const {
   useCreatePostMutation,
   useGetPostsQuery,
+  useGetPostQuery,
   useGetUserPostsQuery,
   useAddReplyMutation,
   useAddRepliesMutation,
